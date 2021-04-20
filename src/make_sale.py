@@ -9,11 +9,11 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1084, 799)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+class Ui_SaleWindow(object):
+    def setupUi(self, SaleWindow):
+        SaleWindow.setObjectName("SaleWindow")
+        SaleWindow.resize(1084, 799)
+        self.centralwidget = QtWidgets.QWidget(SaleWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(9, 9, 121, 621))
@@ -134,28 +134,28 @@ class Ui_MainWindow(object):
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        SaleWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(SaleWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1084, 21))
         self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        SaleWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(SaleWindow)
         self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        SaleWindow.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(SaleWindow)
+        QtCore.QMetaObject.connectSlotsByName(SaleWindow)
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, SaleWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Sale"))
-        self.btn_tops.setText(_translate("MainWindow", "Tops"))
-        self.btn_bottoms.setText(_translate("MainWindow", "Bottoms"))
-        self.btn_ties.setText(_translate("MainWindow", "Ties"))
-        self.btn_cancel.setText(_translate("MainWindow", "Cancel"))
-        self.btn_discount.setText(_translate("MainWindow", "Discount"))
-        self.btn_settle.setText(_translate("MainWindow", "Settle"))
-        self.btn_cust_lookup.setText(_translate("MainWindow", "Customer\n"
+        SaleWindow.setWindowTitle(_translate("SaleWindow", "Sale"))
+        self.btn_tops.setText(_translate("SaleWindow", "Tops"))
+        self.btn_bottoms.setText(_translate("SaleWindow", "Bottoms"))
+        self.btn_ties.setText(_translate("SaleWindow", "Ties"))
+        self.btn_cancel.setText(_translate("SaleWindow", "Cancel"))
+        self.btn_discount.setText(_translate("SaleWindow", "Discount"))
+        self.btn_settle.setText(_translate("SaleWindow", "Settle"))
+        self.btn_cust_lookup.setText(_translate("SaleWindow", "Customer\n"
 "Lookup"))
-        self.btn_manage_acct.setText(_translate("MainWindow", "Manage\n"
+        self.btn_manage_acct.setText(_translate("SaleWindow", "Manage\n"
 "Account"))
