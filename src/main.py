@@ -10,6 +10,12 @@ from discount_selection import Ui_discount_check_dialog
 from discount_percent_entry import Ui_discount_percent_dialog
 from discount_amount_entry import Ui_discount_amount_dialog
 from settle import Ui_settle_window
+from customer_lookup import Ui_customer_lookup_dialog
+from new_customer import Ui_new_customer_dialog
+from account_search_results import Ui_select_account_dialog
+from enter_amount import Ui_payment_amount_dialog
+from manage_account import Ui_manage_account_dialog
+from select_employee import Ui_select_employee_dialog
 
 from PyQt6 import QtWidgets as qtw
 
@@ -82,6 +88,8 @@ class makeSale(qtw.QMainWindow):
         self.ui.btn_discount_check.clicked.connect(self.discount_check)
         self.ui.btn_discount_item.clicked.connect(self.discount_item)
         self.ui.btn_settle.clicked.connect(self.settle_window)
+        self.ui.btn_cust_lookup.clicked.connect(self.customer_lookup)
+        self.ui.btn_manage_acct.clicked.connect(self.manage_account)
 
     def exit(self):
         self.close()
@@ -97,6 +105,14 @@ class makeSale(qtw.QMainWindow):
     def settle_window(self):
         self.settle_window = settle()
         self.settle_window.show()
+
+    def customer_lookup(self):
+        self.customer_lookup_window = customerLookup()
+        self.customer_lookup_window.show()
+
+    def manage_account(self):
+        self.manage_account_window = manageAccount()
+        self.manage_account_window.show()
 
 
 class discountCheck(qtw.QDialog):
@@ -151,10 +167,16 @@ class discount_amount(qtw.QDialog):
 
         # Link buttons to methods
         self.ui.btn_ok.clicked.connect(self.exit)
+        self.ui.btn_new_customer.clicked.connect(self.new_customer)
 
     # Methods
     def exit(self):
         self.close()
+
+    def new_customer(self):
+        self.close()
+        self.new_customer_window = newCustomer()
+        self.new_customer_window.show()
 
 
 class settle(qtw.QMainWindow):
@@ -182,7 +204,114 @@ class settle(qtw.QMainWindow):
         self.close()
         # Close the sale window
         # TODO: Fix this to close the sale window instead of the entire program
-        self.makeSale.exit()
+        makeSale.exit(self.makeSale)
+
+
+class customerLookup(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_customer_lookup_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_new_customer.clicked.connect(self.new_customer)
+
+    def exit(self):
+        self.close()
+
+    def search_customer(self):
+        self.close()
+        self.search_reults = search_customer_results()
+        self.search_reults.show()
+
+    def new_customer(self):
+        self.close()
+        self.new_customer_window = newCustomer()
+        self.new_customer_window.show()
+
+
+class search_customer_results(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_select_account_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_select.clicked.connect(self.select_customer)
+        self.ui.btn_cancel.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+
+    def select_customer(self):
+        self.close()
+        # TODO: Return customer record to the make sale screen
+
+
+class newCustomer(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_new_customer_dialog()
+        self.ui.setupUi(self)
+
+        # Connect buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+
+
+class manageAccount(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_manage_account_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_payment.clicked.connect(self.make_payment)
+
+    def exit(self):
+        self.close()
+
+    def make_payment(self):
+        self.close()
+        self.make_payment_screen = makePayment()
+        self.make_payment_screen.show()
+
+
+class makePayment(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_payment_amount_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_ok.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+
+
+class selectEmployee(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_select_employee_dialog()
+        self.ui.setupUi(self)
 
 
 if __name__ == '__main__':
