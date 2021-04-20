@@ -9,6 +9,7 @@ from make_sale import Ui_SaleWindow
 from discount_selection import Ui_discount_check_dialog
 from discount_percent_entry import Ui_discount_percent_dialog
 from discount_amount_entry import Ui_discount_amount_dialog
+from settle import Ui_settle_window
 
 from PyQt6 import QtWidgets as qtw
 
@@ -76,18 +77,26 @@ class makeSale(qtw.QMainWindow):
         self.ui = Ui_SaleWindow()
         self.ui.setupUi(self)
 
-        # Create windows that can be reached from here
-        self.discount_check_window = discountCheck()
-
         # Link the buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
         self.ui.btn_discount_check.clicked.connect(self.discount_check)
+        self.ui.btn_discount_item.clicked.connect(self.discount_item)
+        self.ui.btn_settle.clicked.connect(self.settle_window)
 
     def exit(self):
         self.close()
 
     def discount_check(self):
+        self.discount_check_window = discountCheck()
         self.discount_check_window.show()
+
+    def discount_item(self):
+        self.discount_item_window = discountCheck()
+        self.discount_item_window.show()
+
+    def settle_window(self):
+        self.settle_window = settle()
+        self.settle_window.show()
 
 
 class discountCheck(qtw.QDialog):
@@ -106,6 +115,7 @@ class discountCheck(qtw.QDialog):
         self.ui.btn_percent.clicked.connect(self.show_discount_percent_entry)
         self.ui.btn_amount.clicked.connect(self.show_discount_amount_entry)
 
+    # Methods
     def show_discount_percent_entry(self):
         self.close()
         self.discount_percent_entry.show()
@@ -124,6 +134,11 @@ class discount_percent(qtw.QDialog):
         self.ui.setupUi(self)
 
         # Link buttons to methods
+        self.ui.btn_ok.clicked.connect(self.exit)
+
+    # Methods
+    def exit(self):
+        self.close()
 
 
 class discount_amount(qtw.QDialog):
@@ -135,6 +150,39 @@ class discount_amount(qtw.QDialog):
         self.ui.setupUi(self)
 
         # Link buttons to methods
+        self.ui.btn_ok.clicked.connect(self.exit)
+
+    # Methods
+    def exit(self):
+        self.close()
+
+
+class settle(qtw.QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_settle_window()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_discount_check.clicked.connect(self.discount_check)
+        self.ui.btn_discount_item.clicked.connect(self.discount_check)
+        self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_finalize.clicked.connect(self.finalize)
+
+    def exit(self):
+        self.close()
+
+    def discount_check(self):
+        self.discount_type = discountCheck()
+        self.discount_type.show()
+
+    def finalize(self):
+        self.close()
+        # Close the sale window
+        # TODO: Fix this to close the sale window instead of the entire program
+        self.makeSale.exit()
 
 
 if __name__ == '__main__':
