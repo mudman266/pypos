@@ -10,28 +10,26 @@ import sys
 
 class PyPOS(qtw.QMainWindow):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
-        self.begin_window = Begin()
-        self.ui.btn_begin.clicked.connect(lambda checked: self.toggle_window(self.begin_window))
-
-        self.setCentralWidget(self.ui)
-
-    def toggle_window(self, window):
-        if window.isVisibe():
-            window.hide()
-        else:
-            window.show()
-
-
-class Begin(qtw.QWidget):
     def __init__(self):
         super().__init__()
-        self.ui = Ui_BeginWindow()
-#        self.ui.setupUi(self)
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        self.ui.btn_begin.clicked.connect(self.show_begin)
+        self.begin_window = Begin()
+
+    def show_begin(self, checked):
+        self.begin_window.show()
+
+
+class Begin(qtw.QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.ui2 = Ui_BeginWindow()
+        self.ui2.setupUi(self)
+        self.ui2.btn_sale_2.clicked.connect(self.exit)
+
+    def exit(self, checked):
+        self.close()
 
 
 if __name__ == '__main__':

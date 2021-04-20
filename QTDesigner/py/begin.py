@@ -10,10 +10,10 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 
 
 class Ui_BeginWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+    def setupUi(self, BeginWindow):
+        BeginWindow.setObjectName("BeginWindow")
+        BeginWindow.resize(800, 600)
+        self.centralwidget = QtWidgets.QWidget(BeginWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(9, 9, 781, 141))
@@ -101,27 +101,27 @@ class Ui_BeginWindow(object):
         font.setStyleStrategy(QtGui.QFont.StyleStrategy.PreferAntialias)
         self.btn_sale_2.setFont(font)
         self.btn_sale_2.setObjectName("btn_sale_2")
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        BeginWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(BeginWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
         self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        BeginWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(BeginWindow)
         self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        BeginWindow.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(BeginWindow)
+        QtCore.QMetaObject.connectSlotsByName(BeginWindow)
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, BeginWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Main"))
-        self.btn_void.setText(_translate("MainWindow", "Refund/\n"
+        BeginWindow.setWindowTitle(_translate("BeginWindow", "Main"))
+        self.btn_void.setText(_translate("BeginWindow", "Refund/\n"
 "Void"))
-        self.btn_sale.setText(_translate("MainWindow", "Make\n"
+        self.btn_sale.setText(_translate("BeginWindow", "Make\n"
 "Sale"))
-        self.btn_cash_tray_options.setText(_translate("MainWindow", "Cash\n"
+        self.btn_cash_tray_options.setText(_translate("BeginWindow", "Cash\n"
 "Tray\n"
 "Options"))
-        self.btn_manufacturing.setText(_translate("MainWindow", "Assembly"))
-        self.btn_sale_2.setText(_translate("MainWindow", "Exit"))
+        self.btn_manufacturing.setText(_translate("BeginWindow", "Assembly"))
+        self.btn_sale_2.setText(_translate("BeginWindow", "Exit"))
