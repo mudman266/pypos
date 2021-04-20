@@ -6,6 +6,9 @@ from FIRST import Ui_MainWindow
 from begin import Ui_BeginWindow
 from password_entry import Ui_Dialog
 from make_sale import Ui_SaleWindow
+from discount_selection import Ui_discount_check_dialog
+from discount_percent_entry import Ui_discount_percent_dialog
+from discount_amount_entry import Ui_discount_amount_dialog
 
 from PyQt6 import QtWidgets as qtw
 
@@ -68,12 +71,70 @@ class Begin(qtw.QMainWindow):
 class makeSale(qtw.QMainWindow):
     def __init__(self):
         super().__init__()
+
+        # Setup the UI
         self.ui = Ui_SaleWindow()
         self.ui.setupUi(self)
+
+        # Create windows that can be reached from here
+        self.discount_check_window = discountCheck()
+
+        # Link the buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_discount_check.clicked.connect(self.discount_check)
 
     def exit(self):
         self.close()
+
+    def discount_check(self):
+        self.discount_check_window.show()
+
+
+class discountCheck(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the ui
+        self.ui = Ui_discount_check_dialog()
+        self.ui.setupUi(self)
+
+        # Create windows that can be reached from here
+        self.discount_percent_entry = discount_percent()
+        self.discount_amount_entry = discount_amount()
+
+        # Link buttons to methods
+        self.ui.btn_percent.clicked.connect(self.show_discount_percent_entry)
+        self.ui.btn_amount.clicked.connect(self.show_discount_amount_entry)
+
+    def show_discount_percent_entry(self):
+        self.close()
+        self.discount_percent_entry.show()
+
+    def show_discount_amount_entry(self):
+        self.close()
+        self.discount_amount_entry.show()
+
+
+class discount_percent(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_discount_percent_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+
+
+class discount_amount(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_discount_amount_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
 
 
 if __name__ == '__main__':
