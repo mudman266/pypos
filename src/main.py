@@ -16,6 +16,13 @@ from account_search_results import Ui_select_account_dialog
 from enter_amount import Ui_payment_amount_dialog
 from manage_account import Ui_manage_account_dialog
 from select_employee import Ui_time_clock_dialog
+from manager import Ui_manager_dialog
+from stock import Ui_stock_dialog
+from groups import Ui_groups_dialog
+from vendors import Ui_vendors_dialog
+from add_item import Ui_add_item_dialog
+from edit_employee import Ui_edit_employee_dialog
+from edit_item import Ui_edit_item_dialog
 
 from PyQt6 import QtWidgets as qtw
 
@@ -32,15 +39,20 @@ class PyPOS(qtw.QMainWindow):
         self.pass_window = PasswordEntry()
         self.begin_window = Begin()
         self.time_clock_window = selectEmployee()
+        self.manager_window = manager()
 
         # Connect the buttons to methods
         self.ui.btn_begin.clicked.connect(self.show_password_entry)
         self.ui.btn_quit.clicked.connect(self.exit)
         self.ui.btn_timeclock.clicked.connect(self.time_clock)
+        self.ui.btn_manager.clicked.connect(self.show_manager)
 
     # Methods to show each window
     def show_password_entry(self):
         self.pass_window.show()
+
+    def show_manager(self):
+        self.manager_window.show()
 
     def exit(self):
         exit(0)
@@ -334,6 +346,145 @@ class selectEmployee(qtw.QDialog):
     def exit(self):
         self.close()
     # TODO: Create method to login/logout emp
+
+
+class manager(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_manager_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_stock.clicked.connect(self.stock)
+        self.ui.btn_edit_groups.clicked.connect(self.groups)
+        self.ui.btn_edit_employee.clicked.connect(self.edit_employee)
+
+    def exit(self):
+        self.close()
+
+    def stock(self):
+        self.close()
+        self.stock_window = stock()
+        self.stock_window.show()
+
+    def groups(self):
+        self.close()
+        self.groups_window = groups()
+        self.groups_window.show()
+
+    def edit_employee(self):
+        self.close()
+        self.emp_window = edit_employee()
+        self.emp_window.show()
+
+
+class stock(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_stock_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_add_edit_vendo.clicked.connect(self.edit_vendor)
+        # self.ui.btn_edit_item.clicked.connect(self.edit_item)
+        self.ui.btn_add_item.clicked.connect(self.add_item)
+
+    def exit(self):
+        self.close()
+
+    def edit_vendor(self):
+        self.close()
+        self.vendor_screen = vendors()
+        self.vendor_screen.show()
+
+    def add_item(self):
+        self.close()
+        self.item_window = addItem()
+        self.item_window.show()
+
+    # def edit_item(self):
+        # self.close()
+
+
+class groups(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_groups_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+
+
+class vendors(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_vendors_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+
+
+class addItem(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_add_item_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+
+
+class edit_employee(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_edit_employee_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+
+
+class editItem(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_edit_item_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
 
 
 if __name__ == '__main__':
