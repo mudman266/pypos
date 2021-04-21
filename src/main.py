@@ -15,7 +15,7 @@ from new_customer import Ui_new_customer_dialog
 from account_search_results import Ui_select_account_dialog
 from enter_amount import Ui_payment_amount_dialog
 from manage_account import Ui_manage_account_dialog
-from select_employee import Ui_select_employee_dialog
+from select_employee import Ui_time_clock_dialog
 
 from PyQt6 import QtWidgets as qtw
 
@@ -31,10 +31,12 @@ class PyPOS(qtw.QMainWindow):
         # Define the windows that can be reached from here
         self.pass_window = PasswordEntry()
         self.begin_window = Begin()
+        self.time_clock_window = selectEmployee()
 
         # Connect the buttons to methods
         self.ui.btn_begin.clicked.connect(self.show_password_entry)
         self.ui.btn_quit.clicked.connect(self.exit)
+        self.ui.btn_timeclock.clicked.connect(self.time_clock)
 
     # Methods to show each window
     def show_password_entry(self):
@@ -42,6 +44,9 @@ class PyPOS(qtw.QMainWindow):
 
     def exit(self):
         exit(0)
+
+    def time_clock(self):
+        self.time_clock_window.show()
 
 
 class PasswordEntry(qtw.QDialog):
@@ -310,8 +315,25 @@ class selectEmployee(qtw.QDialog):
         super().__init__()
 
         # Setup the UI
-        self.ui = Ui_select_employee_dialog()
+        self.ui = Ui_time_clock_dialog()
         self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_emp_1.clicked.connect(self.exit)
+        self.ui.btn_emp_2.clicked.connect(self.exit)
+        self.ui.btn_emp_3.clicked.connect(self.exit)
+        self.ui.btn_emp_4.clicked.connect(self.exit)
+        self.ui.btn_emp_5.clicked.connect(self.exit)
+        self.ui.btn_emp_6.clicked.connect(self.exit)
+        self.ui.btn_emp_7.clicked.connect(self.exit)
+        self.ui.btn_emp_8.clicked.connect(self.exit)
+        self.ui.btn_emp_9.clicked.connect(self.exit)
+        self.ui.btn_emp_10.clicked.connect(self.exit)
+        self.ui.btn_emp_11.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+    # TODO: Create method to login/logout emp
 
 
 if __name__ == '__main__':
