@@ -25,11 +25,15 @@ from edit_employee import Ui_edit_employee_dialog
 from edit_item import Ui_edit_item_dialog
 from inventory_count import Ui_count_dialog
 from payroll import Ui_payroll_dialog
+from manufacturing import Ui_manufacturing_dialog
+from open_orders import Ui_open_orders_dialog
+from assign_work import Ui_assign_work_dialog
+from check_materials import Ui_check_materials_dialog
 
 from PyQt6 import QtWidgets as qtw
 
-# Each window needs its own class
 
+# Each window needs its own class
 class PyPOS(qtw.QMainWindow):
     # Custom initializer to build the window
     def __init__(self):
@@ -362,7 +366,7 @@ class manager(qtw.QDialog):
         self.ui.btn_edit_employee.clicked.connect(self.edit_employee)
         self.ui.btn_deposit.clicked.connect(self.deposit)
         self.ui.btn_payroll.clicked.connect(self.payroll)
-
+        self.ui.btn_manufacturin.clicked.connect(self.manufacturing)
 
     def exit(self):
         self.close()
@@ -390,6 +394,11 @@ class manager(qtw.QDialog):
     def payroll(self):
         self.close()
         self.window = payroll()
+        self.window.show()
+
+    def manufacturing(self):
+        self.close()
+        self.window = manufacturing()
         self.window.show()
 
 
@@ -533,6 +542,84 @@ class payroll(qtw.QDialog):
 
         # Link buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+
+
+class manufacturing(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_manufacturing_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_view_orders.clicked.connect(self.open_orders)
+        self.ui.btn_assign_work.clicked.connect(self.assign_work)
+        self.ui.btn_check_materials.clicked.connect(self.check_materials)
+
+    def exit(self):
+        self.close()
+
+    def open_orders(self):
+        self.close()
+        self.window = openOrders()
+        self.window.show()
+
+    def assign_work(self):
+        self.close()
+        self.window = assignWork()
+        self.window.show()
+
+    def check_materials(self):
+        self.close()
+        self.window = checkMaterials()
+        self.window.show()
+
+
+class openOrders(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_open_orders_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_ok.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+
+
+class assignWork(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_assign_work_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+
+
+class checkMaterials(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_check_materials_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_ok.clicked.connect(self.exit)
 
     def exit(self):
         self.close()
