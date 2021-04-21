@@ -23,6 +23,8 @@ from vendors import Ui_vendors_dialog
 from add_item import Ui_add_item_dialog
 from edit_employee import Ui_edit_employee_dialog
 from edit_item import Ui_edit_item_dialog
+from inventory_count import Ui_count_dialog
+from payroll import Ui_payroll_dialog
 
 from PyQt6 import QtWidgets as qtw
 
@@ -140,10 +142,6 @@ class discountCheck(qtw.QDialog):
         self.ui = Ui_discount_check_dialog()
         self.ui.setupUi(self)
 
-        # Create windows that can be reached from here
-        self.discount_percent_entry = discount_percent()
-        self.discount_amount_entry = discount_amount()
-
         # Link buttons to methods
         self.ui.btn_percent.clicked.connect(self.show_discount_percent_entry)
         self.ui.btn_amount.clicked.connect(self.show_discount_amount_entry)
@@ -151,10 +149,12 @@ class discountCheck(qtw.QDialog):
     # Methods
     def show_discount_percent_entry(self):
         self.close()
+        self.discount_percent_entry = discount_percent()
         self.discount_percent_entry.show()
 
     def show_discount_amount_entry(self):
         self.close()
+        self.discount_amount_entry = discount_amount()
         self.discount_amount_entry.show()
 
 
@@ -184,7 +184,6 @@ class discount_amount(qtw.QDialog):
 
         # Link buttons to methods
         self.ui.btn_ok.clicked.connect(self.exit)
-        self.ui.btn_new_customer.clicked.connect(self.new_customer)
 
     # Methods
     def exit(self):
@@ -221,7 +220,7 @@ class settle(qtw.QMainWindow):
         self.close()
         # Close the sale window
         # TODO: Fix this to close the sale window instead of the entire program
-        makeSale.exit(self.makeSale)
+        # makeSale.exit(self.makeSale)
 
 
 class customerLookup(qtw.QDialog):
@@ -361,6 +360,9 @@ class manager(qtw.QDialog):
         self.ui.btn_stock.clicked.connect(self.stock)
         self.ui.btn_edit_groups.clicked.connect(self.groups)
         self.ui.btn_edit_employee.clicked.connect(self.edit_employee)
+        self.ui.btn_deposit.clicked.connect(self.deposit)
+        self.ui.btn_payroll.clicked.connect(self.payroll)
+
 
     def exit(self):
         self.close()
@@ -380,6 +382,16 @@ class manager(qtw.QDialog):
         self.emp_window = edit_employee()
         self.emp_window.show()
 
+    def deposit(self):
+        self.close()
+        self.window = makePayment()
+        self.window.show()
+
+    def payroll(self):
+        self.close()
+        self.window = payroll()
+        self.window.show()
+
 
 class stock(qtw.QDialog):
     def __init__(self):
@@ -394,6 +406,8 @@ class stock(qtw.QDialog):
         self.ui.btn_add_edit_vendo.clicked.connect(self.edit_vendor)
         # self.ui.btn_edit_item.clicked.connect(self.edit_item)
         self.ui.btn_add_item.clicked.connect(self.add_item)
+        self.ui.btn_edit_item.clicked.connect(self.edit_item)
+        self.ui.btn_perform_count.clicked.connect(self.inventory_count)
 
     def exit(self):
         self.close()
@@ -408,8 +422,15 @@ class stock(qtw.QDialog):
         self.item_window = addItem()
         self.item_window.show()
 
-    # def edit_item(self):
-        # self.close()
+    def edit_item(self):
+        self.close()
+        self.edit_item_window = editItem()
+        self.edit_item_window.show()
+
+    def inventory_count(self):
+        self.close()
+        self.window = inventoryCount()
+        self.window.show()
 
 
 class groups(qtw.QDialog):
@@ -478,6 +499,36 @@ class editItem(qtw.QDialog):
 
         # Setup the UI
         self.ui = Ui_edit_item_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+
+
+class inventoryCount(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_count_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
+
+
+class payroll(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_payroll_dialog()
         self.ui.setupUi(self)
 
         # Link buttons to methods
