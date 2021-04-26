@@ -29,8 +29,12 @@ from manufacturing import Ui_manufacturing_dialog
 from open_orders import Ui_open_orders_dialog
 from assign_work import Ui_assign_work_dialog
 from check_materials import Ui_check_materials_dialog
-
+from PyQt6.QtSql import QSqlDatabase, QSqlQuery, QSqlQueryModel
+from PyQt6.QtCore import QSize, Qt
 from PyQt6 import QtWidgets as qtw
+import db_manager as dbm
+import mysql.connector as mc
+from datetime import datetime
 
 
 # Each window needs its own class
@@ -72,12 +76,15 @@ class PasswordEntry(qtw.QDialog):
         super().__init__()
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+        self.password = ""
 
         # Define windows that can be reached from here
         self.sale_window = makeSale()
 
         # Connect the buttons to methods
         self.ui.btn_ok.clicked.connect(self.load_sale_window)
+        self.ui.btn_1.clicked.connect(self.btn_1)
+        self.ui.btn_2.clicked.connect(self.btn_2)
 
     def exit(self):
         self.close()
@@ -85,6 +92,74 @@ class PasswordEntry(qtw.QDialog):
     def load_sale_window(self):
         self.close()
         self.sale_window.show()
+
+    def btn_1(self):
+        self.password = self.password + "1"
+        self.ui.lbl_pass_input.setText(self.password)
+        cur_text = self.ui.lbl_pass_input.text()
+        if cur_text == "Enter Password":
+            self.ui.lbl_pass_input.setText("*")
+        else:
+            self.ui.lbl_pass_input.setText(cur_text + "*")
+
+    def btn_2(self):
+        db = QSqlDatabase("QMYSQL")
+        db.setHostName("db5002105041.hosting-data.io")
+        db.setUserName("dbu1239445")
+        db.setPassword("$#Cl0th3s)")
+        db.open()
+        query = QSqlQuery("SELECT * from employee", db=db)
+        query.exec()
+        self.tab1 = qtw.QTableView()
+        self.tab1.model = QSqlQueryModel()
+        self.tab1.model.setQuery(query)
+        self.tab1.setMinimumSize(QSize(1024, 600))
+        self.setCentralWidget(self.tab1)
+        self.tab1.show()
+
+        # db = mc.connect(
+        #         host="db5002105041.hosting-data.io",
+        #         user="dbu1239445",
+        #         password="$#Cl0th3s)=",
+        #         charset="utf8mb4"
+        #     )
+        # cursor = db.cursor()
+        # cursor.execute("SELECT * FROM employee")
+        # db = dbm.DB()
+        # db_cursor = db.db_conn()
+        # db_cursor.execute("SELECT * FROM employee")
+        self.ui.lbl_pass_input.setText("testing")
+        # self.ui.lbl_pass_input.setText(db_cursor)
+
+    def btn_3(self):
+        True
+
+    def btn_4(self):
+        True
+
+    def btn_5(self):
+        True
+
+    def btn_6(self):
+        True
+
+    def btn_7(self):
+        True
+
+    def btn_8(self):
+        True
+
+    def btn_9(self):
+        True
+
+    def btn_0(self):
+        True
+
+    def btn_dot(self):
+        True
+
+    def btn_backspace(self):
+        True
 
 
 class Begin(qtw.QMainWindow):
