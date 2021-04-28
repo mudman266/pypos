@@ -34,6 +34,8 @@ import db_manager as dbm
 import mysql.connector as mc
 from datetime import datetime
 
+debugging = True
+
 db = mc.connect(
                 host="10.0.0.126",
                 user="sqluser",
@@ -88,21 +90,32 @@ class PasswordEntry(qtw.QDialog):
         self.sale_window = makeSale()
 
         # Connect the buttons to methods
-        self.ui.btn_ok.clicked.connect(self.load_sale_window)
+        self.ui.btn_ok.clicked.connect(self.try_login)
         self.ui.btn_1.clicked.connect(self.btn_1)
         self.ui.btn_2.clicked.connect(self.btn_2)
         self.ui.btn_3.clicked.connect(self.btn_3)
-        self.ui.btn_4.clicked.connect(self.btn_3)
-        self.ui.btn_5.clicked.connect(self.btn_3)
-        self.ui.btn_6.clicked.connect(self.btn_3)
-        self.ui.btn_7.clicked.connect(self.btn_3)
-        self.ui.btn_8.clicked.connect(self.btn_3)
-        self.ui.btn_9.clicked.connect(self.btn_3)
-        self.ui.btn_0.clicked.connect(self.btn_3)
+        self.ui.btn_4.clicked.connect(self.btn_4)
+        self.ui.btn_5.clicked.connect(self.btn_5)
+        self.ui.btn_6.clicked.connect(self.btn_6)
+        self.ui.btn_7.clicked.connect(self.btn_7)
+        self.ui.btn_8.clicked.connect(self.btn_8)
+        self.ui.btn_9.clicked.connect(self.btn_9)
+        self.ui.btn_0.clicked.connect(self.btn_0)
         self.ui.btn_backspace.clicked.connect(self.btn_backspace)
 
     def exit(self):
         self.close()
+
+    def try_login(self):
+        cursor.execute("SELECT first_name FROM dbs1709505.employee WHERE passcode='{}'".format(self.password))
+        if debugging:
+            print("password is: {}".format(self.password))
+        for row in cursor:
+            print(row[0])
+        if cursor.rowcount < 1:
+            self.ui.lbl_pass_input.setText("Invalid Password")
+        else:
+            self.ui.lbl_pass_input.setText(cursor.rowcount())
 
     def load_sale_window(self):
         self.close()
@@ -403,9 +416,9 @@ class selectEmployee(qtw.QDialog):
 
         # Each name needs to go on a button
         #
-        cursor.execute("SELECT first_name FROM dbs1709505.employee")
-        for row in cursor:
-            print(row[0])
+        # cursor.execute("SELECT first_name FROM dbs1709505.employee")
+        # for row in cursor:
+        #     print(row[0])
 
         self.ui = Ui_time_clock_dialog()
         self.ui.setupUi(self)
