@@ -6,17 +6,16 @@ from datetime import datetime
 
 
 class DB:
-    def db_conn(self):
+    def __init__(self):
         try:
             mydb = mc.connect(
-                host="db5002105041.hosting-data.io",
-                user="dbu1239445",
-                password="$#Cl0th3s)=",
+                host="10.0.0.126",
+                user="sqluser",
+                password="essqueel",
                 charset="utf8mb4"
             )
 
             cursor = mydb.cursor()
-            return cursor
 
         except mc.Error as e:
             print("{}:".format(e.errno) + e.msg)

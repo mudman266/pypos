@@ -29,12 +29,18 @@ from manufacturing import Ui_manufacturing_dialog
 from open_orders import Ui_open_orders_dialog
 from assign_work import Ui_assign_work_dialog
 from check_materials import Ui_check_materials_dialog
-from PyQt6.QtSql import QSqlDatabase, QSqlQuery, QSqlQueryModel
-from PyQt6.QtCore import QSize, Qt
 from PyQt6 import QtWidgets as qtw
 import db_manager as dbm
 import mysql.connector as mc
 from datetime import datetime
+
+db = mc.connect(
+                host="10.0.0.126",
+                user="sqluser",
+                password="essqueel",
+                charset="utf8mb4"
+            )
+cursor = db.cursor()
 
 
 # Each window needs its own class
@@ -85,6 +91,15 @@ class PasswordEntry(qtw.QDialog):
         self.ui.btn_ok.clicked.connect(self.load_sale_window)
         self.ui.btn_1.clicked.connect(self.btn_1)
         self.ui.btn_2.clicked.connect(self.btn_2)
+        self.ui.btn_3.clicked.connect(self.btn_3)
+        self.ui.btn_4.clicked.connect(self.btn_3)
+        self.ui.btn_5.clicked.connect(self.btn_3)
+        self.ui.btn_6.clicked.connect(self.btn_3)
+        self.ui.btn_7.clicked.connect(self.btn_3)
+        self.ui.btn_8.clicked.connect(self.btn_3)
+        self.ui.btn_9.clicked.connect(self.btn_3)
+        self.ui.btn_0.clicked.connect(self.btn_3)
+        self.ui.btn_backspace.clicked.connect(self.btn_backspace)
 
     def exit(self):
         self.close()
@@ -94,72 +109,52 @@ class PasswordEntry(qtw.QDialog):
         self.sale_window.show()
 
     def btn_1(self):
-        self.password = self.password + "1"
-        self.ui.lbl_pass_input.setText(self.password)
+        self.button_press("1")
+
+    def btn_2(self):
+        self.button_press("2")
+
+    def btn_3(self):
+        self.button_press("3")
+
+    def btn_4(self):
+        self.button_press("4")
+
+    def btn_5(self):
+        self.button_press("5")
+
+    def btn_6(self):
+        self.button_press("6")
+
+    def btn_7(self):
+        self.button_press("7")
+
+    def btn_8(self):
+        self.button_press("8")
+
+    def btn_9(self):
+        self.button_press("9")
+
+    def btn_0(self):
+        self.button_press("0")
+
+    def btn_backspace(self):
+        l = len(self.password)
+        self.password = self.password[:l-1]
+        cur_text = self.ui.lbl_pass_input.text()
+        l2 = len(cur_text)
+        cur_text = ""
+        for i in range(l2 - 1):
+            cur_text += "*"
+        self.ui.lbl_pass_input.setText(cur_text)
+
+    def button_press(self, pressed):
+        self.password = self.password + pressed
         cur_text = self.ui.lbl_pass_input.text()
         if cur_text == "Enter Password":
             self.ui.lbl_pass_input.setText("*")
         else:
             self.ui.lbl_pass_input.setText(cur_text + "*")
-
-    def btn_2(self):
-        db = QSqlDatabase("QMYSQL")
-        db.setHostName("db5002105041.hosting-data.io")
-        db.setUserName("dbu1239445")
-        db.setPassword("$#Cl0th3s)")
-        db.open()
-        query = QSqlQuery("SELECT * from employee", db=db)
-        query.exec()
-        self.tab1 = qtw.QTableView()
-        self.tab1.model = QSqlQueryModel()
-        self.tab1.model.setQuery(query)
-        self.tab1.setMinimumSize(QSize(1024, 600))
-        self.setCentralWidget(self.tab1)
-        self.tab1.show()
-
-        # db = mc.connect(
-        #         host="db5002105041.hosting-data.io",
-        #         user="dbu1239445",
-        #         password="$#Cl0th3s)=",
-        #         charset="utf8mb4"
-        #     )
-        # cursor = db.cursor()
-        # cursor.execute("SELECT * FROM employee")
-        # db = dbm.DB()
-        # db_cursor = db.db_conn()
-        # db_cursor.execute("SELECT * FROM employee")
-        self.ui.lbl_pass_input.setText("testing")
-        # self.ui.lbl_pass_input.setText(db_cursor)
-
-    def btn_3(self):
-        True
-
-    def btn_4(self):
-        True
-
-    def btn_5(self):
-        True
-
-    def btn_6(self):
-        True
-
-    def btn_7(self):
-        True
-
-    def btn_8(self):
-        True
-
-    def btn_9(self):
-        True
-
-    def btn_0(self):
-        True
-
-    def btn_dot(self):
-        True
-
-    def btn_backspace(self):
-        True
 
 
 class Begin(qtw.QMainWindow):
@@ -405,6 +400,13 @@ class selectEmployee(qtw.QDialog):
         super().__init__()
 
         # Setup the UI
+
+        # Each name needs to go on a button
+        #
+        cursor.execute("SELECT first_name FROM dbs1709505.employee")
+        for row in cursor:
+            print(row[0])
+
         self.ui = Ui_time_clock_dialog()
         self.ui.setupUi(self)
 
