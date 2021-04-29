@@ -217,7 +217,19 @@ class makeSale(qtw.QMainWindow):
         self.ui.btn_manage_acct.clicked.connect(self.manage_account)
 
         # Create a new ticket in the sales database for the emp_id passed in
-        cursor.execute("INSERT INTO dbs1709505.sales (first_name FROM dbs1709505.employee WHERE passcode='{}'".format(self.password))
+        dateTimeObj = datetime.now()
+        timestampStr = dateTimeObj.strftime("%Y-%m-%d %H:%M:%S")
+        if debugging:
+            print("Datetime: {}".format(timestampStr))
+            print("Attempting to create new sale....")
+
+        cursor.execute(f"INSERT INTO dbs1709505.sales (sessions_id, employee_id, sales_date, sales_tax, subtotal) VALUES ({cur_session[0]}, {int(emp_id)}, {timestampStr!r}, 0.0, 0.0)")
+        if debugging:
+            print("Cursor executed. Committing....")
+        db.commit()
+
+        if debugging:
+            print("New sale created. Huzzah!")
 
     def exit(self):
         self.close()
