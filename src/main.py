@@ -33,6 +33,8 @@ from PyQt6 import QtWidgets as qtw
 import db_manager as dbm
 import mysql.connector as mc
 from datetime import datetime
+from pandas import read_sql, DataFrame
+import pandas.io.sql as psql
 
 debugging = True
 
@@ -43,6 +45,14 @@ db = mc.connect(
                 charset="utf8mb4"
             )
 cursor = db.cursor()
+
+# Set the current session number
+cursor.execute("SELECT ID FROM dbs1709505.sessions")
+session = cursor.fetchall()
+for ses in session:
+    cur_session = ses
+if debugging:
+    print("Session: {}".format(cur_session[0]))
 
 
 # Each window needs its own class
@@ -86,9 +96,6 @@ class PasswordEntry(qtw.QDialog):
         self.ui.setupUi(self)
         self.password = ""
 
-        # Define windows that can be reached from here
-        self.sale_window = makeSale()
-
         # Connect the buttons to methods
         self.ui.btn_ok.clicked.connect(self.try_login)
         self.ui.btn_1.clicked.connect(self.btn_1)
@@ -108,23 +115,28 @@ class PasswordEntry(qtw.QDialog):
 
     def try_login(self):
         cursor.execute("SELECT ID, first_name FROM dbs1709505.employee WHERE passcode='{}'".format(self.password))
-
+        r = cursor.fetchall()
         # Debugging - print the password entered and the employee ID it links to.
         if debugging:
             print("password is: {}".format(self.password))
-            for row in cursor:
+            for row in r:
                 print("Employee ID: {}".format(row[0]))
 
         # Verify password is good
         if cursor.rowcount < 1:
-            print("Failure")
+            print("Login Failure")
             self.ui.lbl_pass_input.setText("Invalid Password")
             self.password = ""
         else:
-            print("Success")
-            # self.ui.lbl_pass_input.setText(cursor.rowcount())
+            # Set the ID of the user that logged in, to pass to the sale window.
+            for row in r:
+                empid = row[0]
+                print("Set empid to {}".format(empid))
+            print("Login Success")
+            self.load_sale_window(empid)
 
-    def load_sale_window(self):
+    def load_sale_window(self, emp_id):
+        self.sale_window = makeSale(str(emp_id))
         self.close()
         self.sale_window.show()
 
@@ -189,7 +201,7 @@ class Begin(qtw.QMainWindow):
 
 
 class makeSale(qtw.QMainWindow):
-    def __init__(self):
+    def __init__(self, emp_id):
         super().__init__()
 
         # Setup the UI
@@ -203,6 +215,9 @@ class makeSale(qtw.QMainWindow):
         self.ui.btn_settle.clicked.connect(self.settle_window)
         self.ui.btn_cust_lookup.clicked.connect(self.customer_lookup)
         self.ui.btn_manage_acct.clicked.connect(self.manage_account)
+
+        # Create a new ticket in the sales database for the emp_id passed in
+        cursor.execute("INSERT INTO dbs1709505.sales (first_name FROM dbs1709505.employee WHERE passcode='{}'".format(self.password))
 
     def exit(self):
         self.close()
