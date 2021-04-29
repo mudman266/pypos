@@ -107,15 +107,22 @@ class PasswordEntry(qtw.QDialog):
         self.close()
 
     def try_login(self):
-        cursor.execute("SELECT first_name FROM dbs1709505.employee WHERE passcode='{}'".format(self.password))
+        cursor.execute("SELECT ID, first_name FROM dbs1709505.employee WHERE passcode='{}'".format(self.password))
+
+        # Debugging - print the password entered and the employee ID it links to.
         if debugging:
             print("password is: {}".format(self.password))
-        for row in cursor:
-            print(row[0])
+            for row in cursor:
+                print("Employee ID: {}".format(row[0]))
+
+        # Verify password is good
         if cursor.rowcount < 1:
+            print("Failure")
             self.ui.lbl_pass_input.setText("Invalid Password")
+            self.password = ""
         else:
-            self.ui.lbl_pass_input.setText(cursor.rowcount())
+            print("Success")
+            # self.ui.lbl_pass_input.setText(cursor.rowcount())
 
     def load_sale_window(self):
         self.close()
@@ -164,7 +171,7 @@ class PasswordEntry(qtw.QDialog):
     def button_press(self, pressed):
         self.password = self.password + pressed
         cur_text = self.ui.lbl_pass_input.text()
-        if cur_text == "Enter Password":
+        if cur_text == "Enter Password" or cur_text == "Invalid Password":
             self.ui.lbl_pass_input.setText("*")
         else:
             self.ui.lbl_pass_input.setText(cur_text + "*")
