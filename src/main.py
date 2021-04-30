@@ -260,42 +260,67 @@ class makeSale(qtw.QMainWindow):
             # tops are groups 1,4,5,6, and 8
             if debugging:
                 print("Asked for tops. Gathering tops...")
-            cursor.execute(f"SELECT ID FROM dbs1709505.stock WHERE stock_group=1 or stock_group=4 or stock_group=5 or stock_group=6 or stock_group=8")
+            cursor.execute(f"SELECT ID, name, price FROM dbs1709505.stock WHERE stock_group=1 or stock_group=4 or stock_group=5 or stock_group=6 or stock_group=8")
             self.items = []
             for item in cursor:
                 if debugging:
-                    print("Item found: {}".format(item[0]))
-                self.items.append(item[0])
+                    print("Item found. Array: {}".format(item))
+                self.items.append(item)
             if debugging:
                 print("All items in group: {}".format(self.items))
         elif major_group.lower() == "bottoms":
             # bottoms are groups 2
             if debugging:
                 print("Asked for bottoms. Gathering bottoms...")
-            cursor.execute(f"SELECT ID FROM dbs1709505.stock WHERE stock_group=2")
+            cursor.execute(f"SELECT ID, name, price FROM dbs1709505.stock WHERE stock_group=2")
             self.items = []
             for item in cursor:
                 if debugging:
-                    print("Item found: {}".format(item[0]))
-                self.items.append(item[0])
+                    print("Item found. Array: {}".format(item))
+                self.items.append(item)
             if debugging:
                 print("All items in group: {}".format(self.items))
         else:
             # remaining groups for display are ties and hats - 10 and 3 respectively
             if debugging:
                 print("Asked for ties. Gathering ties...")
-            cursor.execute(f"SELECT ID FROM dbs1709505.stock WHERE stock_group=3 or stock_group=10")
+            cursor.execute(f"SELECT ID, name, price FROM dbs1709505.stock WHERE stock_group=3 or stock_group=10")
             self.items = []
             for item in cursor:
                 if debugging:
-                    print("Item found: {}".format(item[0]))
-                self.items.append(item[0])
+                    print("Item found. Array: {}".format(item))
+                self.items.append(item)
             if debugging:
                 print("All items in group: {}".format(self.items))
 
+    # TODO: custom signal? how can we store the item's ID with the button to add item to check?
 
+        self.fill_items_in_grid(self.items)
 
+    def fill_items_in_grid(self, items_passed):
+        # Clear any items that may already be present
+        self.clear_layout(self.ui.gridLayout)
 
+        # Create the buttons from the items passed in
+        row = 1
+        col = 1
+        for stock_item in items_passed:
+            button = qtw.QPushButton(stock_item[1], self)
+            button.setGeometry(200, 150, 100, 40)
+            # button.emit(stock_item[0])
+            self.ui.gridLayout.addWidget(button, row, col)
+            row += 1
+            if row > 5:
+                col += 1
+                row = 1
+
+    def clear_layout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget() is not None:
+                child.widget().deleteLater()
+            elif child.layout() is not None:
+                self.clear_layout(child.layout())
 
     def exit(self):
         self.close()
