@@ -215,6 +215,9 @@ class makeSale(qtw.QMainWindow):
         self.ui.btn_settle.clicked.connect(self.settle_window)
         self.ui.btn_cust_lookup.clicked.connect(self.customer_lookup)
         self.ui.btn_manage_acct.clicked.connect(self.manage_account)
+        self.ui.btn_tops.clicked.connect(self.pop_tops)
+        self.ui.btn_bottoms.clicked.connect(self.pop_bottoms)
+        self.ui.btn_ties.clicked.connect(self.pop_ties)
 
         # Create a new ticket in the sales database for the emp_id passed in
         dateTimeObj = datetime.now()
@@ -230,6 +233,69 @@ class makeSale(qtw.QMainWindow):
 
         if debugging:
             print("New sale created. Huzzah!")
+
+        # Get the sale ID so items can be added to sales_detail
+        cursor.execute(f"SELECT ID FROM dbs1709505.sales WHERE sales_date = {timestampStr!r}")
+        self.sale_id = cursor.fetchall()
+        if debugging:
+            print(f"Gathered sale id: {self.sale_id[0][0]}")
+
+        # First group is tops
+        self.populate_grid("tops")
+
+    def pop_tops(self):
+        self.populate_grid("tops")
+
+    def pop_bottoms(self):
+        self.populate_grid("bottoms")
+
+    def pop_ties(self):
+        self.populate_grid("ties")
+
+    # Gather the ID for every item matching the minor groups
+    # This will be used to put the name on the buttons as well as add the item to the sale when selected
+    # Populate the grid layout with stock items matching desired group
+    def populate_grid(self, major_group):
+        if major_group.lower() == "tops":
+            # tops are groups 1,4,5,6, and 8
+            if debugging:
+                print("Asked for tops. Gathering tops...")
+            cursor.execute(f"SELECT ID FROM dbs1709505.stock WHERE stock_group=1 or stock_group=4 or stock_group=5 or stock_group=6 or stock_group=8")
+            self.items = []
+            for item in cursor:
+                if debugging:
+                    print("Item found: {}".format(item[0]))
+                self.items.append(item[0])
+            if debugging:
+                print("All items in group: {}".format(self.items))
+        elif major_group.lower() == "bottoms":
+            # bottoms are groups 2
+            if debugging:
+                print("Asked for bottoms. Gathering bottoms...")
+            cursor.execute(f"SELECT ID FROM dbs1709505.stock WHERE stock_group=2")
+            self.items = []
+            for item in cursor:
+                if debugging:
+                    print("Item found: {}".format(item[0]))
+                self.items.append(item[0])
+            if debugging:
+                print("All items in group: {}".format(self.items))
+        else:
+            # remaining groups for display are ties and hats - 10 and 3 respectively
+            if debugging:
+                print("Asked for ties. Gathering ties...")
+            cursor.execute(f"SELECT ID FROM dbs1709505.stock WHERE stock_group=3 or stock_group=10")
+            self.items = []
+            for item in cursor:
+                if debugging:
+                    print("Item found: {}".format(item[0]))
+                self.items.append(item[0])
+            if debugging:
+                print("All items in group: {}".format(self.items))
+
+
+
+
 
     def exit(self):
         self.close()
