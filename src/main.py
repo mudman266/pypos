@@ -386,6 +386,10 @@ class settle(qtw.QMainWindow):
     def __init__(self, sales_id, subtotal, tax):
         super().__init__()
 
+        self.sales_id = sales_id
+        self.subtotal = subtotal
+        self.tax = tax
+
         if 'paid_amt' not in locals():
             self.paid_amt = 0.0
 
@@ -404,19 +408,101 @@ class settle(qtw.QMainWindow):
         self.ui.btn_cancel.clicked.connect(self.exit)
         self.ui.btn_finalize.clicked.connect(self.finalize)
         self.ui.btn_cash.clicked.connect(self.cash)
+        self.ui.btn_credit.clicked.connect(self.credit)
+        self.ui.btn_check.clicked.connect(self.check)
+        self.ui.btn_on_acct.clicked.connect(self.on_acct)
+        self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_ok.clicked.connect(self.ok)
+        self.ui.btn_0.clicked.connect(self.btn_0)
+        self.ui.btn_1.clicked.connect(self.btn_1)
+        self.ui.btn_2.clicked.connect(self.btn_2)
+        self.ui.btn_3.clicked.connect(self.btn_3)
+        self.ui.btn_4.clicked.connect(self.btn_4)
+        self.ui.btn_5.clicked.connect(self.btn_5)
+        self.ui.btn_6.clicked.connect(self.btn_6)
+        self.ui.btn_7.clicked.connect(self.btn_7)
+        self.ui.btn_8.clicked.connect(self.btn_8)
+        self.ui.btn_9.clicked.connect(self.btn_9)
+        self.ui.btn_decimal.clicked.connect(self.btn_decimal)
+        self.ui.btn_backspace.clicked.connect(self.btn_backspace)
+
+    def btn_1(self):
+        self.button_press("1")
+
+    def btn_2(self):
+        self.button_press("2")
+
+    def btn_3(self):
+        self.button_press("3")
+
+    def btn_4(self):
+        self.button_press("4")
+
+    def btn_5(self):
+        self.button_press("5")
+
+    def btn_6(self):
+        self.button_press("6")
+
+    def btn_7(self):
+        self.button_press("7")
+
+    def btn_8(self):
+        self.button_press("8")
+
+    def btn_9(self):
+        self.button_press("9")
+
+    def btn_0(self):
+        self.button_press("0")
+
+    def btn_decimal(self):
+        self.button_press(".")
+
+    def btn_backspace(self):
+        # Take the last char off the string
+        l = len(str(self.amount))
+        if l > 0:
+            if debugging:
+                print(f"Current amount: {self.amount}\nAdjusting amount...")
+            self.amount = self.amount[:l - 1]
+            if debugging:
+                print(f"Amount now: {self.amount}")
+            self.ui.lbl_amt.setText(self.amount)
+
+    def button_press(self, pressed):
+        if self.amount == 0:
+            self.amount = pressed
+        else:
+            self.amount = str(self.amount) + pressed
+        cur_text = self.ui.lbl_amt.text()
+        if cur_text == "0.00" or cur_text == "0.0" or cur_text == "0." or cur_text == "0" or cur_text == "":
+            self.ui.lbl_amt.setText(pressed)
+        else:
+            self.ui.lbl_amt.setText(cur_text + pressed)
 
     def exit(self):
         self.close()
 
     def cash(self):
-        self.add_payment = makePayment()
-        self.add_payment.show()
+        cursor.execute(f"UPDATE dbs1709505.sales SET payment_types_id = {self.pay_type} WHERE id = {self.sale_id[0][0]}")
+
+    def credit(self):
+        self.window = makePayment(2, self.sales_id)
+        self.window.show()
+
+    def check(self):
+        self.window = makePayment(3, self.sales_id)
+        self.window.show()
+
+    def on_acct(self):
+        self.window = makePayment(3, self.sales_id)
+        self.window.show()
 
     def finalize(self):
+        cursor.execute(
+            f"UPDATE dbs1709505.sales SET payment_types_id = {self.pay_type} WHERE id = {self.sale_id[0][0]}")
         self.close()
-        # Close the sale window
-        # TODO: Fix this to close the sale window instead of the entire program
-        # makeSale.exit(self.makeSale)
 
 
 class customerLookup(qtw.QDialog):
@@ -499,91 +585,6 @@ class manageAccount(qtw.QDialog):
         self.close()
         self.make_payment_screen = makePayment()
         self.make_payment_screen.show()
-
-
-class makePayment(qtw.QDialog):
-    def __init__(self):
-        super().__init__()
-
-        self.amount = 0
-
-        # Setup the UI
-        self.ui = Ui_payment_amount_dialog()
-        self.ui.setupUi(self)
-
-        # Link buttons to methods
-        self.ui.btn_cancel.clicked.connect(self.exit)
-        self.ui.btn_ok.clicked.connect(self.exit)
-        self.ui.btn_0.clicked.connect(self.btn_0)
-        self.ui.btn_1.clicked.connect(self.btn_1)
-        self.ui.btn_2.clicked.connect(self.btn_2)
-        self.ui.btn_3.clicked.connect(self.btn_3)
-        self.ui.btn_4.clicked.connect(self.btn_4)
-        self.ui.btn_5.clicked.connect(self.btn_5)
-        self.ui.btn_6.clicked.connect(self.btn_6)
-        self.ui.btn_7.clicked.connect(self.btn_7)
-        self.ui.btn_8.clicked.connect(self.btn_8)
-        self.ui.btn_9.clicked.connect(self.btn_9)
-        self.ui.btn_decimal.clicked.connect(self.btn_decimal)
-        self.ui.btn_backspace.clicked.connect(self.btn_backspace)
-
-    def btn_1(self):
-        self.button_press("1")
-
-    def btn_2(self):
-        self.button_press("2")
-
-    def btn_3(self):
-        self.button_press("3")
-
-    def btn_4(self):
-        self.button_press("4")
-
-    def btn_5(self):
-        self.button_press("5")
-
-    def btn_6(self):
-        self.button_press("6")
-
-    def btn_7(self):
-        self.button_press("7")
-
-    def btn_8(self):
-        self.button_press("8")
-
-    def btn_9(self):
-        self.button_press("9")
-
-    def btn_0(self):
-        self.button_press("0")
-
-    def btn_decimal(self):
-        self.button_press(".")
-
-    def btn_backspace(self):
-        # Take the last char off the string
-        l = len(str(self.amount))
-        if l > 0:
-            if debugging:
-                print(f"Current amount: {self.amount}\nAdjusting amount...")
-            self.amount = self.amount[:l - 1]
-            if debugging:
-                print(f"Amount now: {self.amount}")
-            self.ui.lbl_amt.setText(self.amount)
-
-    def button_press(self, pressed):
-        if self.amount == 0:
-            self.amount = pressed
-        else:
-            self.amount = str(self.amount) + pressed
-        cur_text = self.ui.lbl_amt.text()
-        if cur_text == "0.00" or cur_text == "0.0" or cur_text == "0." or cur_text == "0" or cur_text == "":
-            self.ui.lbl_amt.setText(pressed)
-        else:
-            self.ui.lbl_amt.setText(cur_text + pressed)
-
-    def exit(self):
-        self.close()
 
 
 class selectEmployee(qtw.QDialog):
