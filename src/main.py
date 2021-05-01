@@ -203,14 +203,16 @@ class makeSale(qtw.QMainWindow):
     def __init__(self, emp_id):
         super().__init__()
 
+        self.subtotal = 0.0
+        self.tax = 0.0
+        self.total = 0.0
+
         # Setup the UI
         self.ui = Ui_SaleWindow()
         self.ui.setupUi(self)
 
         # Link the buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
-        self.ui.btn_discount_check.clicked.connect(self.discount_check)
-        self.ui.btn_discount_item.clicked.connect(self.discount_item)
         self.ui.btn_settle.clicked.connect(self.settle_window)
         self.ui.btn_cust_lookup.clicked.connect(self.customer_lookup)
         self.ui.btn_manage_acct.clicked.connect(self.manage_account)
@@ -342,11 +344,22 @@ class makeSale(qtw.QMainWindow):
         # Populate the row with the added item
         cursor.execute(f"SELECT name, price FROM dbs1709505.stock WHERE id = {args[0]}")
         for item in cursor:
+            item_name = item[0]
+            item_price = item[1]
             if debugging:
                 print(f"Item stats adding to chit: Name: {item[0]} Price: {item[1]} at row: {row_count + 1}")
-            self.ui.tableWidget_chit.setItem(row_count, 0, qtw.QTableWidgetItem(item[0]))
-            self.ui.tableWidget_chit.setItem(row_count, 1, qtw.QTableWidgetItem(str(item[1])))
+            self.ui.tableWidget_chit.setItem(row_count, 0, qtw.QTableWidgetItem(item_name))
+            self.ui.tableWidget_chit.setItem(row_count, 1, qtw.QTableWidgetItem(str(item_price)))
 
+        # Adjust subtotal, tax, and total.
+        self.subtotal = self.subtotal + item_price
+        self.tax = self.subtotal * .08
+        self.total = self.subtotal + self.tax
+
+        # Update total labels
+        self.ui.lbl_subtotal_amt.setText("{:.2f}".format(self.subtotal))
+        self.ui.lbl_tax_amt.setText("{:.2f}".format(self.tax))
+        self.ui.lbl_total_amt.setText("{:.2f}".format(self.total))
 
 
     def clear_layout(self, layout):
@@ -379,67 +392,6 @@ class makeSale(qtw.QMainWindow):
     def manage_account(self):
         self.manage_account_window = manageAccount()
         self.manage_account_window.show()
-
-
-class discountCheck(qtw.QDialog):
-    def __init__(self):
-        super().__init__()
-
-        # Setup the ui
-        self.ui = Ui_discount_check_dialog()
-        self.ui.setupUi(self)
-
-        # Link buttons to methods
-        self.ui.btn_percent.clicked.connect(self.show_discount_percent_entry)
-        self.ui.btn_amount.clicked.connect(self.show_discount_amount_entry)
-
-    # Methods
-    def show_discount_percent_entry(self):
-        self.close()
-        self.discount_percent_entry = discount_percent()
-        self.discount_percent_entry.show()
-
-    def show_discount_amount_entry(self):
-        self.close()
-        self.discount_amount_entry = discount_amount()
-        self.discount_amount_entry.show()
-
-
-class discount_percent(qtw.QDialog):
-    def __init__(self):
-        super().__init__()
-
-        # Setup the UI
-        self.ui = Ui_discount_percent_dialog()
-        self.ui.setupUi(self)
-
-        # Link buttons to methods
-        self.ui.btn_ok.clicked.connect(self.exit)
-
-    # Methods
-    def exit(self):
-        self.close()
-
-
-class discount_amount(qtw.QDialog):
-    def __init__(self):
-        super().__init__()
-
-        # Setup the UI
-        self.ui = Ui_discount_amount_dialog()
-        self.ui.setupUi(self)
-
-        # Link buttons to methods
-        self.ui.btn_ok.clicked.connect(self.exit)
-
-    # Methods
-    def exit(self):
-        self.close()
-
-    def new_customer(self):
-        self.close()
-        self.new_customer_window = newCustomer()
-        self.new_customer_window.show()
 
 
 class settle(qtw.QMainWindow):
