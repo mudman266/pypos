@@ -330,7 +330,7 @@ Account</string>
      </rect>
     </property>
    </widget>
-   <widget class="QTableView" name="tableView_2">
+   <widget class="QTableWidget" name="tableWidget_chit">
     <property name="geometry">
      <rect>
       <x>790</x>

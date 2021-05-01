@@ -291,7 +291,18 @@ class makeSale(qtw.QMainWindow):
                 print("All items in group: {}".format(self.items))
 
         # Populate the grid with the items
+        if debugging:
+            print("Populating grid...")
         self.fill_items_in_grid(self.items)
+
+        # Update the chit view
+        if debugging:
+            print("Updating the chit...")
+        # new_item = qtw.QTableWidgetItem("Test 1")
+        # self.ui.tableWidget_chit.setItem(1, 1, new_item)
+        self.ui.tableWidget_chit.setRowCount(0)
+        self.ui.tableWidget_chit.setColumnCount(3)
+        self.ui.tableWidget_chit.setHorizontalHeaderLabels(["Item", "Price", "Subtotal"])
 
     def fill_items_in_grid(self, items_passed):
         # Clear any items that may already be present
@@ -318,6 +329,23 @@ class makeSale(qtw.QMainWindow):
         db.commit()
         if debugging:
             print("Item added to sales_detail.")
+
+        # Update the chit
+        # Increase the row count by 1
+        row_count = self.ui.tableWidget_chit.rowCount() + 1
+        if debugging:
+            print(f"Row count is now: {row_count}")
+        self.ui.tableWidget_chit.setRowCount(row_count)
+        # Populate the row with the added item
+        cursor.execute(f"SELECT name, price FROM dbs1709505.stock WHERE id = {args[0]}")
+        for item in cursor:
+            if debugging:
+                print(f"Item stats adding to chit: Name: {item[0]} Price: {item[1]}")
+            self.ui.tableWidget_chit.setItem(row_count, 1, qtw.QTableWidgetItem(item[0]))
+            self.ui.tableWidget_chit.setItem(row_count, 2, qtw.QTableWidgetItem(str(item[1])))
+            # new_item = [item[0], item[1]]
+
+
 
     def clear_layout(self, layout):
         while layout.count():
