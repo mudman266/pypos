@@ -373,7 +373,7 @@ class makeSale(qtw.QMainWindow):
         self.close()
 
     def settle_window(self):
-        self.settle_window = settle()
+        self.settle_window = settle(self.sale_id, self.subtotal, self.tax)
         self.settle_window.show()
 
     def customer_lookup(self):
@@ -386,8 +386,12 @@ class makeSale(qtw.QMainWindow):
 
 
 class settle(qtw.QMainWindow):
-    def __init__(self):
+    def __init__(self, sales_id, total, tax):
         super().__init__()
+
+        # Update the sale database with the tax and subtotal
+        cursor.execute(f"UPDATE dbs1709505.sales SET sales_tax = {tax}, subtotal = {total} WHERE id = {sales_id[0][0]}")
+        db.commit()
 
         # Setup the UI
         self.ui = Ui_settle_window()
