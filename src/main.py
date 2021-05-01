@@ -361,7 +361,6 @@ class makeSale(qtw.QMainWindow):
         self.ui.lbl_tax_amt.setText("{:.2f}".format(self.tax))
         self.ui.lbl_total_amt.setText("{:.2f}".format(self.total))
 
-
     def clear_layout(self, layout):
         while layout.count():
             child = layout.takeAt(0)
@@ -372,14 +371,6 @@ class makeSale(qtw.QMainWindow):
 
     def exit(self):
         self.close()
-
-    def discount_check(self):
-        self.discount_check_window = discountCheck()
-        self.discount_check_window.show()
-
-    def discount_item(self):
-        self.discount_item_window = discountCheck()
-        self.discount_item_window.show()
 
     def settle_window(self):
         self.settle_window = settle()
