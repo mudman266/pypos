@@ -30,11 +30,10 @@ from open_orders import Ui_open_orders_dialog
 from assign_work import Ui_assign_work_dialog
 from check_materials import Ui_check_materials_dialog
 from PyQt6 import QtWidgets as qtw
-import db_manager as dbm
+from PyQt6.QtCore import pyqtSignal
 import mysql.connector as mc
 from datetime import datetime
-from pandas import read_sql, DataFrame
-import pandas.io.sql as psql
+
 
 debugging = True
 
@@ -252,8 +251,6 @@ class makeSale(qtw.QMainWindow):
     def pop_ties(self):
         self.populate_grid("ties")
 
-    # Gather the ID for every item matching the minor groups
-    # This will be used to put the name on the buttons as well as add the item to the sale when selected
     # Populate the grid layout with stock items matching desired group
     def populate_grid(self, major_group):
         if major_group.lower() == "tops":
@@ -293,8 +290,7 @@ class makeSale(qtw.QMainWindow):
             if debugging:
                 print("All items in group: {}".format(self.items))
 
-    # TODO: custom signal? how can we store the item's ID with the button to add item to check?
-
+        # Populate the grid with the items
         self.fill_items_in_grid(self.items)
 
     def fill_items_in_grid(self, items_passed):
@@ -307,12 +303,21 @@ class makeSale(qtw.QMainWindow):
         for stock_item in items_passed:
             button = qtw.QPushButton(stock_item[1], self)
             button.setGeometry(200, 150, 100, 40)
-            # button.emit(stock_item[0])
+            button.clicked.connect(lambda state, x=stock_item[0], y=self.sale_id: self.add_item(x, y))
             self.ui.gridLayout.addWidget(button, row, col)
             row += 1
             if row > 5:
                 col += 1
                 row = 1
+
+    def add_item(self, *args):
+        # Adds a selected item to the chit
+        if debugging:
+            print(f"Adding Item id: {args[0]} to Sale id: {args[1][0][0]}")
+        cursor.execute(f"INSERT INTO dbs1709505.sales_detail (sales_id, stock_id, qty, needs_mfg) VALUES ({args[1][0][0]}, {args[0]}, 1, 0)")
+        db.commit()
+        if debugging:
+            print("Item added to sales_detail.")
 
     def clear_layout(self, layout):
         while layout.count():
