@@ -6,9 +6,6 @@ from FIRST import Ui_MainWindow
 from begin import Ui_BeginWindow
 from password_entry import Ui_Dialog
 from make_sale import Ui_SaleWindow
-from discount_selection import Ui_discount_check_dialog
-from discount_percent_entry import Ui_discount_percent_dialog
-from discount_amount_entry import Ui_discount_amount_dialog
 from settle import Ui_settle_window
 from customer_lookup import Ui_customer_lookup_dialog
 from new_customer import Ui_new_customer_dialog
@@ -406,13 +403,14 @@ class settle(qtw.QMainWindow):
         # Link buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
         self.ui.btn_finalize.clicked.connect(self.finalize)
+        self.ui.btn_cash.clicked.connect(self.cash)
 
     def exit(self):
         self.close()
 
-    def discount_check(self):
-        self.discount_type = discountCheck()
-        self.discount_type.show()
+    def cash(self):
+        self.add_payment = makePayment()
+        self.add_payment.show()
 
     def finalize(self):
         self.close()
@@ -507,6 +505,8 @@ class makePayment(qtw.QDialog):
     def __init__(self):
         super().__init__()
 
+        self.amount = 0
+
         # Setup the UI
         self.ui = Ui_payment_amount_dialog()
         self.ui.setupUi(self)
@@ -514,6 +514,73 @@ class makePayment(qtw.QDialog):
         # Link buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
         self.ui.btn_ok.clicked.connect(self.exit)
+        self.ui.btn_0.clicked.connect(self.btn_0)
+        self.ui.btn_1.clicked.connect(self.btn_1)
+        self.ui.btn_2.clicked.connect(self.btn_2)
+        self.ui.btn_3.clicked.connect(self.btn_3)
+        self.ui.btn_4.clicked.connect(self.btn_4)
+        self.ui.btn_5.clicked.connect(self.btn_5)
+        self.ui.btn_6.clicked.connect(self.btn_6)
+        self.ui.btn_7.clicked.connect(self.btn_7)
+        self.ui.btn_8.clicked.connect(self.btn_8)
+        self.ui.btn_9.clicked.connect(self.btn_9)
+        self.ui.btn_decimal.clicked.connect(self.btn_decimal)
+        self.ui.btn_backspace.clicked.connect(self.btn_backspace)
+
+    def btn_1(self):
+        self.button_press("1")
+
+    def btn_2(self):
+        self.button_press("2")
+
+    def btn_3(self):
+        self.button_press("3")
+
+    def btn_4(self):
+        self.button_press("4")
+
+    def btn_5(self):
+        self.button_press("5")
+
+    def btn_6(self):
+        self.button_press("6")
+
+    def btn_7(self):
+        self.button_press("7")
+
+    def btn_8(self):
+        self.button_press("8")
+
+    def btn_9(self):
+        self.button_press("9")
+
+    def btn_0(self):
+        self.button_press("0")
+
+    def btn_decimal(self):
+        self.button_press(".")
+
+    def btn_backspace(self):
+        # Take the last char off the string
+        l = len(str(self.amount))
+        if l > 0:
+            if debugging:
+                print(f"Current amount: {self.amount}\nAdjusting amount...")
+            self.amount = self.amount[:l - 1]
+            if debugging:
+                print(f"Amount now: {self.amount}")
+            self.ui.lbl_amt.setText(self.amount)
+
+    def button_press(self, pressed):
+        if self.amount == 0:
+            self.amount = pressed
+        else:
+            self.amount = str(self.amount) + pressed
+        cur_text = self.ui.lbl_amt.text()
+        if cur_text == "0.00" or cur_text == "0.0" or cur_text == "0." or cur_text == "0" or cur_text == "":
+            self.ui.lbl_amt.setText(pressed)
+        else:
+            self.ui.lbl_amt.setText(cur_text + pressed)
 
     def exit(self):
         self.close()
@@ -564,7 +631,6 @@ class manager(qtw.QDialog):
         self.ui.btn_cancel.clicked.connect(self.exit)
         self.ui.btn_stock.clicked.connect(self.stock)
         self.ui.btn_edit_groups.clicked.connect(self.groups)
-        self.ui.btn_edit_employee.clicked.connect(self.edit_employee)
         self.ui.btn_deposit.clicked.connect(self.deposit)
         self.ui.btn_payroll.clicked.connect(self.payroll)
         self.ui.btn_manufacturin.clicked.connect(self.manufacturing)
@@ -581,11 +647,6 @@ class manager(qtw.QDialog):
         self.close()
         self.groups_window = groups()
         self.groups_window.show()
-
-    def edit_employee(self):
-        self.close()
-        self.emp_window = edit_employee()
-        self.emp_window.show()
 
     def deposit(self):
         self.close()
