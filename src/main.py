@@ -386,20 +386,24 @@ class makeSale(qtw.QMainWindow):
 
 
 class settle(qtw.QMainWindow):
-    def __init__(self, sales_id, total, tax):
+    def __init__(self, sales_id, subtotal, tax):
         super().__init__()
 
+        if 'paid_amt' not in locals():
+            self.paid_amt = 0.0
+
         # Update the sale database with the tax and subtotal
-        cursor.execute(f"UPDATE dbs1709505.sales SET sales_tax = {tax}, subtotal = {total} WHERE id = {sales_id[0][0]}")
+        cursor.execute(f"UPDATE dbs1709505.sales SET sales_tax = {tax}, subtotal = {subtotal} WHERE id = {sales_id[0][0]}")
         db.commit()
 
         # Setup the UI
         self.ui = Ui_settle_window()
         self.ui.setupUi(self)
+        self.ui.lbl_total_amt.setText("{:.2f}".format(subtotal + tax))
+        self.ui.lbl_paid_amt.setText("{:.2f}".format(self.paid_amt))
+        self.ui.lbl_balance_amt.setText("{:.2f}".format((subtotal + tax) - self.paid_amt))
 
         # Link buttons to methods
-        self.ui.btn_discount_check.clicked.connect(self.discount_check)
-        self.ui.btn_discount_item.clicked.connect(self.discount_check)
         self.ui.btn_cancel.clicked.connect(self.exit)
         self.ui.btn_finalize.clicked.connect(self.finalize)
 
