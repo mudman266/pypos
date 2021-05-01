@@ -60,7 +60,6 @@ class PyPOS(qtw.QMainWindow):
         self.ui.setupUi(self)
 
         # Define the windows that can be reached from here
-        self.pass_window = PasswordEntry()
         self.begin_window = Begin()
         self.time_clock_window = selectEmployee()
         self.manager_window = manager()
@@ -73,6 +72,7 @@ class PyPOS(qtw.QMainWindow):
 
     # Methods to show each window
     def show_password_entry(self):
+        self.pass_window = PasswordEntry()
         self.pass_window.show()
 
     def show_manager(self):
@@ -371,6 +371,7 @@ class makeSale(qtw.QMainWindow):
 
     def settle_window(self):
         self.settle_window = settle(self.sale_id, self.subtotal, self.tax)
+        self.hide()
         self.settle_window.show()
 
     def customer_lookup(self):
@@ -389,6 +390,7 @@ class settle(qtw.QMainWindow):
         self.sales_id = sales_id
         self.subtotal = subtotal
         self.tax = tax
+        self.payment_type = 0
 
         if 'paid_amt' not in locals():
             self.paid_amt = 0.0
@@ -401,8 +403,6 @@ class settle(qtw.QMainWindow):
         self.ui = Ui_settle_window()
         self.ui.setupUi(self)
         self.ui.lbl_total_amt.setText("{:.2f}".format(subtotal + tax))
-        self.ui.lbl_paid_amt.setText("{:.2f}".format(self.paid_amt))
-        self.ui.lbl_balance_amt.setText("{:.2f}".format((subtotal + tax) - self.paid_amt))
 
         # Link buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
@@ -412,7 +412,6 @@ class settle(qtw.QMainWindow):
         self.ui.btn_check.clicked.connect(self.check)
         self.ui.btn_on_acct.clicked.connect(self.on_acct)
         self.ui.btn_cancel.clicked.connect(self.exit)
-        self.ui.btn_ok.clicked.connect(self.ok)
         self.ui.btn_0.clicked.connect(self.btn_0)
         self.ui.btn_1.clicked.connect(self.btn_1)
         self.ui.btn_2.clicked.connect(self.btn_2)
@@ -461,20 +460,20 @@ class settle(qtw.QMainWindow):
 
     def btn_backspace(self):
         # Take the last char off the string
-        l = len(str(self.amount))
+        l = len(str(self.paid_amt))
         if l > 0:
             if debugging:
-                print(f"Current amount: {self.amount}\nAdjusting amount...")
-            self.amount = self.amount[:l - 1]
+                print(f"Current amount: {self.paid_amt}\nAdjusting amount...")
+            self.paid_amt = self.paid_amt[:l - 1]
             if debugging:
-                print(f"Amount now: {self.amount}")
-            self.ui.lbl_amt.setText(self.amount)
+                print(f"Amount now: {self.paid_amt}")
+            self.ui.lbl_amt.setText(self.paid_amt)
 
     def button_press(self, pressed):
-        if self.amount == 0:
-            self.amount = pressed
+        if self.paid_amt == 0:
+            self.paid_amt = pressed
         else:
-            self.amount = str(self.amount) + pressed
+            self.paid_amt = str(self.paid_amt) + pressed
         cur_text = self.ui.lbl_amt.text()
         if cur_text == "0.00" or cur_text == "0.0" or cur_text == "0." or cur_text == "0" or cur_text == "":
             self.ui.lbl_amt.setText(pressed)
@@ -483,25 +482,27 @@ class settle(qtw.QMainWindow):
 
     def exit(self):
         self.close()
+        makeSale.show(self)
 
     def cash(self):
-        cursor.execute(f"UPDATE dbs1709505.sales SET payment_types_id = {self.pay_type} WHERE id = {self.sale_id[0][0]}")
+        self.payment_type = 1
+        self.paid_amt = float(self.ui.lbl_amt.text())
+        self.ui.lbl_change_due_amt.setText("{:.2f}".format((self.subtotal + self.tax) - self.paid_amt))
 
     def credit(self):
-        self.window = makePayment(2, self.sales_id)
-        self.window.show()
+        self.payment_type = 2
 
     def check(self):
-        self.window = makePayment(3, self.sales_id)
-        self.window.show()
+        self.payment_type = 3
 
     def on_acct(self):
-        self.window = makePayment(3, self.sales_id)
-        self.window.show()
+        self.payment_type = 4
 
-    def finalize(self):
+    def finalize(self, payment_type):
+        # Update the DB with the payment type
         cursor.execute(
-            f"UPDATE dbs1709505.sales SET payment_types_id = {self.pay_type} WHERE id = {self.sale_id[0][0]}")
+            f"UPDATE dbs1709505.sales SET payment_types_id = {self.payment_type} WHERE id = {self.sales_id[0][0]}")
+        db.commit()
         self.close()
 
 
