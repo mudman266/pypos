@@ -295,14 +295,17 @@ class makeSale(qtw.QMainWindow):
             print("Populating grid...")
         self.fill_items_in_grid(self.items)
 
-        # Update the chit view
-        if debugging:
-            print("Updating the chit...")
-        # new_item = qtw.QTableWidgetItem("Test 1")
-        # self.ui.tableWidget_chit.setItem(1, 1, new_item)
-        self.ui.tableWidget_chit.setRowCount(0)
-        self.ui.tableWidget_chit.setColumnCount(3)
-        self.ui.tableWidget_chit.setHorizontalHeaderLabels(["Item", "Price", "Subtotal"])
+        # Update the chit view if a new check
+        if self.ui.tableWidget_chit.rowCount() == 0:
+            if debugging:
+                print("Updating the chit...")
+            # new_item = qtw.QTableWidgetItem("Test 1")
+            # self.ui.tableWidget_chit.setItem(1, 1, new_item)
+            self.ui.tableWidget_chit.setRowCount(0)
+            self.ui.tableWidget_chit.setColumnCount(2)
+            self.ui.tableWidget_chit.setHorizontalHeaderLabels(["Item", "Price", "Subtotal"])
+
+        # TODO - Add Subtotal, tax, and total to the bottom of the chit.
 
     def fill_items_in_grid(self, items_passed):
         # Clear any items that may already be present
@@ -332,18 +335,17 @@ class makeSale(qtw.QMainWindow):
 
         # Update the chit
         # Increase the row count by 1
-        row_count = self.ui.tableWidget_chit.rowCount() + 1
+        row_count = self.ui.tableWidget_chit.rowCount()
         if debugging:
-            print(f"Row count is now: {row_count}")
-        self.ui.tableWidget_chit.setRowCount(row_count)
+            print(f"Row count is: {row_count}")
+        self.ui.tableWidget_chit.setRowCount(row_count + 1)
         # Populate the row with the added item
         cursor.execute(f"SELECT name, price FROM dbs1709505.stock WHERE id = {args[0]}")
         for item in cursor:
             if debugging:
-                print(f"Item stats adding to chit: Name: {item[0]} Price: {item[1]}")
-            self.ui.tableWidget_chit.setItem(row_count, 1, qtw.QTableWidgetItem(item[0]))
-            self.ui.tableWidget_chit.setItem(row_count, 2, qtw.QTableWidgetItem(str(item[1])))
-            # new_item = [item[0], item[1]]
+                print(f"Item stats adding to chit: Name: {item[0]} Price: {item[1]} at row: {row_count + 1}")
+            self.ui.tableWidget_chit.setItem(row_count, 0, qtw.QTableWidgetItem(item[0]))
+            self.ui.tableWidget_chit.setItem(row_count, 1, qtw.QTableWidgetItem(str(item[1])))
 
 
 
