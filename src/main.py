@@ -10,7 +10,6 @@ from settle import Ui_settle_window
 from customer_lookup import Ui_customer_lookup_dialog
 from new_customer import Ui_new_customer_dialog
 from account_search_results import Ui_select_account_dialog
-from enter_amount import Ui_payment_amount_dialog
 from manage_account import Ui_manage_account_dialog
 from select_employee import Ui_time_clock_dialog
 from manager import Ui_manager_dialog
@@ -26,6 +25,7 @@ from manufacturing import Ui_manufacturing_dialog
 from open_orders import Ui_open_orders_dialog
 from assign_work import Ui_assign_work_dialog
 from check_materials import Ui_check_materials_dialog
+from receipt import Ui_receipt
 from PyQt6 import QtWidgets as qtw
 from PyQt6.QtCore import pyqtSignal
 import mysql.connector as mc
@@ -298,8 +298,7 @@ class makeSale(qtw.QMainWindow):
         if self.ui.tableWidget_chit.rowCount() == 0:
             if debugging:
                 print("Updating the chit...")
-            # new_item = qtw.QTableWidgetItem("Test 1")
-            # self.ui.tableWidget_chit.setItem(1, 1, new_item)
+            # Set the rows and columns. Set the column headers.
             self.ui.tableWidget_chit.setRowCount(0)
             self.ui.tableWidget_chit.setColumnCount(2)
             self.ui.tableWidget_chit.setHorizontalHeaderLabels(["Item", "Price", "Subtotal"])
@@ -503,6 +502,58 @@ class settle(qtw.QMainWindow):
         cursor.execute(
             f"UPDATE dbs1709505.sales SET payment_types_id = {self.payment_type} WHERE id = {self.sales_id[0][0]}")
         db.commit()
+        if debugging:
+            print("Updated sales DB with payment type.")
+        self.window = receipt(self.sales_id[0][0])
+        self.window.show()
+        self.close()
+
+
+class receipt(qtw.QDialog):
+    def __init__(self, sale_id):
+        super().__init__()
+
+        self.sale_id = sale_id
+        # Setup the UI
+        self.ui = Ui_receipt()
+        self.ui.setupUi(self)
+
+        if debugging:
+            print("Generating chit...")
+        # Set the column headers
+        self.ui.items_table.setRowCount(0)
+        self.ui.items_table.setColumnCount(2)
+        self.ui.items_table.setHorizontalHeaderLabels(["Item", "Amount"])
+
+        # Get all items from the sale
+        sold_items = []
+        cursor.execute(f"SELECT stock_id FROM dbs1709505.sales_detail WHERE sales_id = {self.sale_id}")
+        # Add every sold item's id to an array
+        for item in cursor:
+            sold_items.append(item[0])
+            if debugging:
+                print(f"Appended {item[0]} to sold_items: {sold_items}")
+
+        # For every sold item id in the array, get the name and price and insert into the table
+        for items in sold_items:
+            cursor.execute(f"SELECT name, price FROM dbs1709505.stock WHERE id = {items}")
+            for name, price in cursor:
+                cur_rows = self.ui.items_table.rowCount()
+                self.ui.items_table.setRowCount(cur_rows + 1)
+                self.ui.items_table.setItem(cur_rows, 0, qtw.QTableWidgetItem(name))
+                self.ui.items_table.setItem(cur_rows, 1, qtw.QTableWidgetItem(str(price)))
+
+        # Update the subtotal, tax, and total
+        cursor.execute(f"SELECT subtotal, sales_tax FROM dbs1709505.sales WHERE id = {self.sale_id}")
+        for subtotal, tax in cursor:
+            self.ui.lbl_subtotal_amt.setText(str(subtotal))
+            self.ui.lbl_tax_amt.setText(str(tax))
+            self.ui.lbl_total_amt.setText(str(subtotal + tax))
+
+        # Link buttons to methods
+        self.ui.btn_done.clicked.connect(self.exit)
+
+    def exit(self):
         self.close()
 
 
