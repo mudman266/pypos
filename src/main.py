@@ -655,33 +655,109 @@ class selectEmployee(qtw.QDialog):
         super().__init__()
 
         # Setup the UI
-
-        # Each name needs to go on a button
-        #
-        # cursor.execute("SELECT first_name FROM dbs1709505.employee")
-        # for row in cursor:
-        #     print(row[0])
-
         self.ui = Ui_time_clock_dialog()
         self.ui.setupUi(self)
 
         # Link buttons to methods
-        self.ui.btn_emp_1.clicked.connect(self.exit)
-        self.ui.btn_emp_2.clicked.connect(self.exit)
-        self.ui.btn_emp_3.clicked.connect(self.exit)
-        self.ui.btn_emp_4.clicked.connect(self.exit)
-        self.ui.btn_emp_5.clicked.connect(self.exit)
-        self.ui.btn_emp_6.clicked.connect(self.exit)
-        self.ui.btn_emp_7.clicked.connect(self.exit)
-        self.ui.btn_emp_8.clicked.connect(self.exit)
-        self.ui.btn_emp_9.clicked.connect(self.exit)
-        self.ui.btn_emp_10.clicked.connect(self.exit)
-        self.ui.btn_emp_11.clicked.connect(self.exit)
+        self.ui.btn_emp_1.clicked.connect(self.btn_1)
+        self.ui.btn_emp_2.clicked.connect(self.btn_2)
+        self.ui.btn_emp_3.clicked.connect(self.btn_3)
+        self.ui.btn_emp_4.clicked.connect(self.btn_4)
+        self.ui.btn_emp_5.clicked.connect(self.btn_5)
+        self.ui.btn_emp_6.clicked.connect(self.btn_6)
+        self.ui.btn_emp_7.clicked.connect(self.btn_7)
+        self.ui.btn_emp_8.clicked.connect(self.btn_8)
+        self.ui.btn_emp_9.clicked.connect(self.btn_9)
+        self.ui.btn_emp_10.clicked.connect(self.btn_10)
+        self.ui.btn_emp_11.clicked.connect(self.btn_11)
 
     def exit(self):
         self.close()
     # TODO: Create method to login/logout emp
 
+    def btn_1(self):
+        self.time_clock(1)
+
+    def btn_2(self):
+        self.time_clock(2)
+
+    def btn_3(self):
+        self.time_clock(3)
+
+    def btn_4(self):
+        self.time_clock(12)
+
+    def btn_5(self):
+        self.time_clock(5)
+
+    def btn_6(self):
+        self.time_clock(6)
+
+    def btn_7(self):
+        self.time_clock(7)
+
+    def btn_8(self):
+        self.time_clock(8)
+
+    def btn_9(self):
+        self.time_clock(9)
+
+    def btn_10(self):
+        self.time_clock(10)
+
+    def btn_11(self):
+        self.time_clock(11)
+
+    def btn_12(self):
+        self.time_clock(12)
+
+
+    def time_clock(self, emp_id):
+        # is the employee already clocked in?
+        logins = []
+        cur_date = datetime.now()
+        cur_date_string = datetime.strftime(cur_date, "%Y-%m-%d")
+        cur_date_string = cur_date_string
+        # Get all logins from today
+        cursor.execute(f"SELECT id, time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id} AND time_in LIKE CONCAT({cur_date_string!r}, '%')")
+        for login_id, time_in, time_out in cursor:
+            logins.append([login_id, time_in, time_out])
+        if debugging:
+            print(f"Retrieved logins: {logins}")
+        # If zero logins were returned, use the clock in function
+        if len(logins) < 1:
+            self.login(emp_id)
+
+        # If a time_in exists with no time_out, use the logout function with the record id
+        for sets in logins:
+            if sets[1] is not None:
+                if sets[2] is None:
+                    self.logout(sets[0])
+        if len(logins) > 0:
+            if logins[len(logins) - 1][2] is not None:
+                self.login(emp_id)
+
+    def login(self, emp_id):
+        if debugging:
+            print(f"Running login for emp: {emp_id}")
+        cur_date = datetime.now()
+        timestampStr = cur_date.strftime("%Y-%m-%d %H:%M:%S")
+        cursor.execute(f"INSERT INTO dbs1709505.labor (time_in, employee_id) VALUES ({timestampStr!r}, {emp_id})")
+        db.commit()
+        self.close()
+        if debugging:
+            print("Logged in.")
+
+    def logout(self, login_record_id):
+        if debugging:
+            print(f"Running logout on record: {login_record_id}")
+        cur_date = datetime.now()
+        timestampStr = cur_date.strftime("%Y-%m-%d %H:%M:%S")
+        cursor.execute(f"UPDATE dbs1709505.labor SET time_out = {timestampStr!r} WHERE id = {login_record_id}")
+        db.commit()
+        if debugging:
+            print("Logged out.")
+            self.close()
 
 class manager(qtw.QDialog):
     def __init__(self):
