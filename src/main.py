@@ -16,9 +16,6 @@ from manager import Ui_manager_dialog
 from stock import Ui_stock_dialog
 from groups import Ui_groups_dialog
 from vendors import Ui_vendors_dialog
-from add_item import Ui_add_item_dialog
-from edit_employee import Ui_edit_employee_dialog
-from edit_item import Ui_edit_item_dialog
 from inventory_count import Ui_count_dialog
 from payroll import Ui_payroll_dialog
 from manufacturing import Ui_manufacturing_dialog
@@ -986,51 +983,6 @@ class vendors(qtw.QDialog):
         self.close()
 
 
-class addItem(qtw.QDialog):
-    def __init__(self):
-        super().__init__()
-
-        # Setup the UI
-        self.ui = Ui_add_item_dialog()
-        self.ui.setupUi(self)
-
-        # Link buttons to methods
-        self.ui.btn_cancel.clicked.connect(self.exit)
-
-    def exit(self):
-        self.close()
-
-
-class edit_employee(qtw.QDialog):
-    def __init__(self):
-        super().__init__()
-
-        # Setup the UI
-        self.ui = Ui_edit_employee_dialog()
-        self.ui.setupUi(self)
-
-        # Link buttons to methods
-        self.ui.btn_cancel.clicked.connect(self.exit)
-
-    def exit(self):
-        self.close()
-
-
-class editItem(qtw.QDialog):
-    def __init__(self):
-        super().__init__()
-
-        # Setup the UI
-        self.ui = Ui_edit_item_dialog()
-        self.ui.setupUi(self)
-
-        # Link buttons to methods
-        self.ui.btn_cancel.clicked.connect(self.exit)
-
-    def exit(self):
-        self.close()
-
-
 class inventoryCount(qtw.QDialog):
     def __init__(self):
         super().__init__()
@@ -1056,6 +1008,59 @@ class payroll(qtw.QDialog):
 
         # Link buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_cut_check.clicked.connect(self.cut_check)
+
+    def exit(self):
+        self.close()
+
+    def cut_check(self):
+        if self.ui.radioButton_1.isChecked():
+            emp = 1
+        if self.ui.radioButton_2.isChecked():
+            emp = 2
+        start_date = self.ui.dateEdit_start.date()
+        end_date = self.ui.dateEdit_end.date()
+        self.window = employee_check(emp, start_date, end_date)
+        self.window.show()
+
+
+class employee_check(qtw.QDialog):
+    def __init__(self, emp_id, start_date, end_date):
+        super().__init__()
+
+        self.total_hours = 0.0
+
+        # Setup the ui
+        self.ui = Ui_payroll_check_display()
+        self.ui.setupUi(self)
+
+        # Convert Pyqt dates to datetime dates
+        self.start_date = datetime.strptime(str(start_date.toPyDate()), "%Y-%m-%d")
+        self.end_date = datetime.strptime(str(end_date.toPyDate()), "%Y-%m-%d")
+        self.start_date_str = datetime.strftime(self.start_date, "%Y-%m-%d %H:%M:%S")
+        self.end_date_str = datetime.strftime(self.end_date, "%Y-%m-%d")
+        self.end_date_str = self.end_date_str + " 23:59:59"
+
+        # Find logins in time range
+        if debugging:
+            print(f"Generating an employee check.\nInfo - Emp: {emp_id}\nStart Date: {self.start_date_str!r}\nEnd Date: {self.end_date_str!r}")
+        cursor.execute(f"SELECT time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id} AND time_in >= {self.start_date_str!r} and time_out <= {self.end_date_str!r}")
+
+        # For each login, gather the hours worked
+        for login_time, logout_time in cursor:
+            delta = logout_time - login_time
+            if debugging:
+                print(f"Found time delta of: {delta}")
+
+            # Convert the delta to hours
+            worked = str(delta).split(":")
+            self.total_hours += int(worked[0])
+            self.total_hours += int(worked[1])/60
+        if debugging:
+            print(f"Total hours worked: {self.total_hours:.2f}")
+
+        # Link buttons to methods
+        self.ui.btn_ok.clicked.connect(self.exit)
 
     def exit(self):
         self.close()
