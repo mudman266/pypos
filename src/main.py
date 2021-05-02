@@ -26,6 +26,8 @@ from open_orders import Ui_open_orders_dialog
 from assign_work import Ui_assign_work_dialog
 from check_materials import Ui_check_materials_dialog
 from receipt import Ui_receipt
+from enter_amount import Ui_payment_amount_dialog
+from employee_check import Ui_payroll_check_display
 from PyQt6 import QtWidgets as qtw
 from PyQt6.QtCore import pyqtSignal
 import mysql.connector as mc
@@ -62,21 +64,16 @@ class PyPOS(qtw.QMainWindow):
         # Define the windows that can be reached from here
         self.begin_window = Begin()
         self.time_clock_window = selectEmployee()
-        self.manager_window = manager()
 
         # Connect the buttons to methods
         self.ui.btn_begin.clicked.connect(self.show_password_entry)
         self.ui.btn_quit.clicked.connect(self.exit)
         self.ui.btn_timeclock.clicked.connect(self.time_clock)
-        self.ui.btn_manager.clicked.connect(self.show_manager)
 
     # Methods to show each window
     def show_password_entry(self):
         self.pass_window = PasswordEntry()
         self.pass_window.show()
-
-    def show_manager(self):
-        self.manager_window.show()
 
     def exit(self):
         exit(0)
@@ -200,6 +197,7 @@ class makeSale(qtw.QMainWindow):
     def __init__(self, emp_id):
         super().__init__()
 
+        self.emp_id = emp_id
         self.subtotal = 0.0
         self.tax = 0.0
         self.total = 0.0
@@ -216,6 +214,7 @@ class makeSale(qtw.QMainWindow):
         self.ui.btn_tops.clicked.connect(self.pop_tops)
         self.ui.btn_bottoms.clicked.connect(self.pop_bottoms)
         self.ui.btn_ties.clicked.connect(self.pop_ties)
+        self.ui.btn_manager.clicked.connect(self.show_manager)
 
         # Create a new ticket in the sales database for the emp_id passed in
         dateTimeObj = datetime.now()
@@ -240,6 +239,10 @@ class makeSale(qtw.QMainWindow):
 
         # First group is tops
         self.populate_grid("tops")
+
+    def show_manager(self):
+        self.manager_window = manager(self.emp_id)
+        self.manager_window.show()
 
     def pop_tops(self):
         self.populate_grid("tops")
@@ -536,6 +539,8 @@ class receipt(qtw.QDialog):
         self.ui.items_table.setColumnCount(2)
         self.ui.items_table.setHorizontalHeaderLabels(["Item", "Amount"])
 
+        # TODO: Update the Date label
+
         # Get all items from the sale
         sold_items = []
         cursor.execute(f"SELECT stock_id FROM dbs1709505.sales_detail WHERE sales_id = {self.sale_id}")
@@ -711,7 +716,6 @@ class selectEmployee(qtw.QDialog):
     def btn_12(self):
         self.time_clock(12)
 
-
     def time_clock(self, emp_id):
         # is the employee already clocked in?
         logins = []
@@ -759,9 +763,12 @@ class selectEmployee(qtw.QDialog):
             print("Logged out.")
             self.close()
 
+
 class manager(qtw.QDialog):
-    def __init__(self):
+    def __init__(self, emp_id):
         super().__init__()
+
+        self.manager_id = emp_id
 
         # Setup the UI
         self.ui = Ui_manager_dialog()
@@ -770,7 +777,6 @@ class manager(qtw.QDialog):
         # Link buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
         self.ui.btn_stock.clicked.connect(self.stock)
-        self.ui.btn_edit_groups.clicked.connect(self.groups)
         self.ui.btn_deposit.clicked.connect(self.deposit)
         self.ui.btn_payroll.clicked.connect(self.payroll)
         self.ui.btn_manufacturin.clicked.connect(self.manufacturing)
@@ -778,20 +784,13 @@ class manager(qtw.QDialog):
     def exit(self):
         self.close()
 
-    def stock(self):
-        self.close()
-        self.stock_window = stock()
-        self.stock_window.show()
-
-    def groups(self):
-        self.close()
-        self.groups_window = groups()
-        self.groups_window.show()
-
     def deposit(self):
         self.close()
-        self.window = makePayment()
+        self.window = enter_deposit(self.manager_id)
         self.window.show()
+
+    def stock(self):
+        True
 
     def payroll(self):
         self.close()
@@ -802,6 +801,119 @@ class manager(qtw.QDialog):
         self.close()
         self.window = manufacturing()
         self.window.show()
+
+
+class enter_deposit(qtw.QDialog):
+    def __init__(self, emp_id):
+        super().__init__()
+
+        self.paid_amt = 0
+        self.cash = None
+        self.checks = None
+        self.emp_id = emp_id
+
+        # Setup the UI
+        self.ui = Ui_payment_amount_dialog()
+        self.ui.setupUi(self)
+        self.ui.label.setText("Enter Cash:")
+
+        # Link buttons to methods
+        self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_0.clicked.connect(self.btn_0)
+        self.ui.btn_1.clicked.connect(self.btn_1)
+        self.ui.btn_2.clicked.connect(self.btn_2)
+        self.ui.btn_3.clicked.connect(self.btn_3)
+        self.ui.btn_4.clicked.connect(self.btn_4)
+        self.ui.btn_5.clicked.connect(self.btn_5)
+        self.ui.btn_6.clicked.connect(self.btn_6)
+        self.ui.btn_7.clicked.connect(self.btn_7)
+        self.ui.btn_8.clicked.connect(self.btn_8)
+        self.ui.btn_9.clicked.connect(self.btn_9)
+        self.ui.btn_decimal.clicked.connect(self.btn_decimal)
+        self.ui.btn_backspace.clicked.connect(self.btn_backspace)
+        self.ui.btn_ok.clicked.connect(self.ok)
+
+    def btn_1(self):
+        self.button_press("1")
+
+    def btn_2(self):
+        self.button_press("2")
+
+    def btn_3(self):
+        self.button_press("3")
+
+    def btn_4(self):
+        self.button_press("4")
+
+    def btn_5(self):
+        self.button_press("5")
+
+    def btn_6(self):
+        self.button_press("6")
+
+    def btn_7(self):
+        self.button_press("7")
+
+    def btn_8(self):
+        self.button_press("8")
+
+    def btn_9(self):
+        self.button_press("9")
+
+    def btn_0(self):
+        self.button_press("0")
+
+    def btn_decimal(self):
+        self.button_press(".")
+
+    def btn_backspace(self):
+        # Take the last char off the string
+        l = len(str(self.paid_amt))
+        if l > 0:
+            if debugging:
+                print(f"Current amount: {self.paid_amt}\nAdjusting amount...")
+            self.paid_amt = self.paid_amt[:l - 1]
+            if debugging:
+                print(f"Amount now: {self.paid_amt}")
+            self.ui.lbl_amt.setText(self.paid_amt)
+
+    def button_press(self, pressed):
+        if self.paid_amt == 0:
+            self.paid_amt = pressed
+        else:
+            self.paid_amt = str(self.paid_amt) + pressed
+        cur_text = self.ui.lbl_amt.text()
+        if cur_text == "0.00" or cur_text == "0.0" or cur_text == "0." or cur_text == "0" or cur_text == "":
+            self.ui.lbl_amt.setText(pressed)
+        else:
+            self.ui.lbl_amt.setText(cur_text + pressed)
+
+    def ok(self):
+        # Has cash already been entered?
+        if self.cash is None:
+            self.cash = self.paid_amt
+            if debugging:
+                print(f"Got cash input of: {self.cash}")
+            self.ui.label.setText("Enter Checks:")
+            self.ui.lbl_amt.setText("0.00")
+            self.paid_amt = 0
+        else:
+            # Cash already entered, this must be checks
+            self.checks = self.paid_amt
+            if debugging:
+                print(f"Got check input of: {self.checks}")
+                print("Making deposit...")
+            cur_date = datetime.now()
+            cur_date_string = datetime.strftime(cur_date, "%Y-%m-%d %H:%M:%S")
+            cursor.execute(f"INSERT INTO dbs1709505.deposits (date_time, employee_id, cash, checks) VALUES ("
+                           f"{cur_date_string!r}, {self.emp_id}, {self.cash}, {self.checks})")
+            db.commit()
+            if debugging:
+                print("Deposit made.")
+            self.close()
+
+    def exit(self):
+        self.close()
 
 
 class stock(qtw.QDialog):

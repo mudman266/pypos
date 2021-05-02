@@ -89,7 +89,7 @@ Clock</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="4">
+     <item row="0" column="3">
       <widget class="QPushButton" name="btn_quit">
        <property name="minimumSize">
         <size>
@@ -111,44 +111,6 @@ Clock</string>
        </property>
        <property name="text">
         <string>Quit</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="btn_manager">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>20</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>100</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>100</width>
-         <height>100</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>12</width>
-         <height>2</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>Bookman Old Style</family>
-         <pointsize>16</pointsize>
-         <stylestrategy>PreferAntialias</stylestrategy>
-        </font>
-       </property>
-       <property name="text">
-        <string>Manager</string>
        </property>
       </widget>
      </item>
