@@ -1095,7 +1095,7 @@ class employee_check(qtw.QDialog):
             self.fita_tax = self.gross_pay * .06
             self.medicare_tax = self.gross_pay * .0145
             self.state_tax = self.gross_pay * .0525
-            self.total_pay = self.gross_pay - self.fica_tax - self.fita_tax - self.medicare_tax - self.state_tax
+            self.total_pay = self.gross_pay - round(self.fica_tax, 2) - round(self.fita_tax, 2) - round(self.medicare_tax, 2) - round(self.state_tax, 2)
 
         # Insert the entry into payroll_history DB
         cur_date = datetime.now()
@@ -1122,7 +1122,22 @@ class employee_check(qtw.QDialog):
         amounts = f"{self.total_pay:.2f}".split(".")
         written_dollar_amt = self.num_to_english(int(amounts[0]))
         written_change_amt = self.num_to_english(int(amounts[1]))
-        self.ui.lbl_written_amt.setText(f"{written_dollar_amt} Dollars and {written_change_amt} cents.")
+        self.ui.lbl_written_amt.setText(f"{written_dollar_amt} Dollars and {written_change_amt} Cents.")
+
+        # Update tables
+        self.ui.tableWidget_2.setRowCount(6)
+        self.ui.tableWidget_2.setColumnCount(2)
+        self.ui.tableWidget_2.setVerticalHeaderLabels(["Gross Pay", "FICA", "FITA", "Med", "State", "Net Pay"])
+        self.ui.tableWidget_2.setHorizontalHeaderLabels(["Current", "Year to Date"])
+
+        # Current paycheck table
+        self.ui.tableWidget_2.setItem(0, 0, qtw.QTableWidgetItem(f"{self.gross_pay:.2f}"))
+        self.ui.tableWidget_2.setItem(1, 0, qtw.QTableWidgetItem(f"{self.fica_tax:.2f}"))
+        self.ui.tableWidget_2.setItem(2, 0, qtw.QTableWidgetItem(f"{self.fita_tax:.2f}"))
+        self.ui.tableWidget_2.setItem(3, 0, qtw.QTableWidgetItem(f"{self.medicare_tax:.2f}"))
+        self.ui.tableWidget_2.setItem(4, 0, qtw.QTableWidgetItem(f"{self.state_tax:.2f}"))
+        self.ui.tableWidget_2.setItem(5, 0, qtw.QTableWidgetItem(f"{self.total_pay:.2f}"))
+
 
         # Link buttons to methods
         self.ui.btn_ok.clicked.connect(self.exit)
