@@ -29,6 +29,7 @@ from PyQt6 import QtWidgets as qtw
 from PyQt6.QtCore import pyqtSignal
 import mysql.connector as mc
 from datetime import datetime
+import num2words as n2w
 
 
 debugging = True
@@ -1095,7 +1096,45 @@ class employee_check(qtw.QDialog):
             self.fita_tax = self.gross_pay * .06
             self.medicare_tax = self.gross_pay * .0145
             self.state_tax = self.gross_pay * .0525
-            self.total_pay = self.gross_pay - round(self.fica_tax, 2) - round(self.fita_tax, 2) - round(self.medicare_tax, 2) - round(self.state_tax, 2)
+            self.total_pay = self.gross_pay - round(self.fica_tax, 2) - round(self.fita_tax, 2)\
+                             - round(self.medicare_tax, 2) - round(self.state_tax, 2)
+        else:
+            # Salaried - pay_rate * number days worked
+            cursor.execute(f"SELECT time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id}\
+                AND time_in >= {self.start_date_str!r} AND time_out <= {self.end_date_str!r}")
+            days_worked = 0
+            paying_for_date = None
+
+            # Check each login to see if it occurs on the same day as the previous
+            for tin, tout in cursor:
+                # First run
+                if paying_for_date is None:
+                    # Set the paying date
+                    paying_for_date_str = datetime.strftime(tin, "%Y-%m-%d")
+                    paying_for_date = datetime.strptime(paying_for_date_str, "%Y-%m-%d")
+                    days_worked += 1
+                else:
+                    # Not first run
+                    tin_str = datetime.strftime(tin, "%Y-%m-%d")
+                    tin_date = datetime.strptime(tin_str, "%Y-%m-%d")
+                    if debugging:
+                        print(f"Comparing {tin_date} to {paying_for_date}")
+                    # Compare login date to the paying date
+                    if tin_date > paying_for_date:
+                        if debugging:
+                            print("Newer date. Adding day worked.")
+                        paying_for_date = tin_date
+                        days_worked += 1
+            if debugging:
+                print(f"Day count: {days_worked}")
+
+            self.gross_pay = float(days_worked) * float(self.pay_rate)
+            self.fica_tax = self.gross_pay * .062
+            self.fita_tax = self.gross_pay * .06
+            self.medicare_tax = self.gross_pay * .0145
+            self.state_tax = self.gross_pay * .0525
+            self.total_pay = self.gross_pay - round(self.fica_tax, 2) - round(self.fita_tax, 2) \
+                             - round(self.medicare_tax, 2) - round(self.state_tax, 2)
 
         # Insert the entry into payroll_history DB
         cur_date = datetime.now()
@@ -1120,9 +1159,9 @@ class employee_check(qtw.QDialog):
         self.ui.lbl_chk_no.setText(f"Check Number: {self.check_number}")
         self.ui.lbl_numeric_amt.setText(f"${self.total_pay:.2f}")
         amounts = f"{self.total_pay:.2f}".split(".")
-        written_dollar_amt = self.num_to_english(int(amounts[0]))
-        written_change_amt = self.num_to_english(int(amounts[1]))
-        self.ui.lbl_written_amt.setText(f"{written_dollar_amt} Dollars and {written_change_amt} Cents.")
+        written_dollar_amt = n2w.num2words(amounts[0])
+        written_change_amt = n2w.num2words(amounts[1])
+        self.ui.lbl_written_amt.setText(f"Amount: {written_dollar_amt} Dollars and {written_change_amt} Cents.")
 
         # Update tables
         self.ui.tableWidget_2.setRowCount(6)
@@ -1138,38 +1177,11 @@ class employee_check(qtw.QDialog):
         self.ui.tableWidget_2.setItem(4, 0, qtw.QTableWidgetItem(f"{self.state_tax:.2f}"))
         self.ui.tableWidget_2.setItem(5, 0, qtw.QTableWidgetItem(f"{self.total_pay:.2f}"))
 
-
         # Link buttons to methods
         self.ui.btn_ok.clicked.connect(self.exit)
 
     def exit(self):
         self.close()
-
-    def num_to_english(self, number):
-        self.under_20 = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven",
-                    "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"]
-        self.tens = ["", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]
-        self.thousands = ["", "Thousand", "Million", "Billion"]
-        if number == 0:
-            return "Zero"
-        answer = ""
-        i = 0
-        while number > 0:
-            if number % 1000 != 0:
-                answer = self.helper(number % 1000) + self.thousands[i] + " " + answer
-                i += 1
-                number //= 1000
-            return answer.strip()
-
-    def helper(self, n):
-        if n == 0:
-            return ""
-        elif n < 20:
-            return self.under_20[n] + " "
-        elif n < 100:
-            return self.tens[n // 10] + " " + self.helper(n % 10)
-        else:
-            return self.under_20[n // 100] + " Hundred " + self.helper(n % 100)
 
 
 class manufacturing(qtw.QDialog):
