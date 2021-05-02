@@ -497,7 +497,18 @@ class settle(qtw.QMainWindow):
     def on_acct(self):
         self.payment_type = 4
 
-    def finalize(self, payment_type):
+    def finalize(self, payment_type=None):
+        # Check that the order total has been handled.
+        if float(self.paid_amt) < self.subtotal + self.tax or self.payment_type is None:
+            self.warning_window = qtw.QDialog(self)
+            self.warning_window.setWindowTitle("Balance not settled.")
+            warning_label = qtw.QLabel("The balance has not been settled or no payment type has been chosen.")
+            self.warning_window.layout = qtw.QVBoxLayout()
+            self.warning_window.layout.addWidget(warning_label)
+            self.warning_window.setLayout(self.warning_window.layout)
+            self.warning_window.show()
+            return
+
         # Update the DB with the payment type
         cursor.execute(
             f"UPDATE dbs1709505.sales SET payment_types_id = {self.payment_type} WHERE id = {self.sales_id[0][0]}")
