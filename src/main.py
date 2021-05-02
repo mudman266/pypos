@@ -1077,11 +1077,84 @@ class employee_check(qtw.QDialog):
         if debugging:
             print(f"Total hours worked: {self.total_hours:.2f}")
 
+        # Build the entry for the payroll_history DB
+
+        # Gross pay
+        cursor.execute(f"SELECT salaried, pay_rate, ssn, first_name FROM dbs1709505.employee WHERE id = {emp_id}")
+        if debugging:
+            print(f"Calculating gross pay for emp: {emp_id}")
+        for record in cursor:
+            self.salaried = record[0]
+            self.pay_rate = record[1]
+            self.ssn = record[2]
+            self.first_name = record[3]
+
+        if self.salaried == 0:
+            self.gross_pay = float(self.pay_rate) * self.total_hours
+            self.fica_tax = self.gross_pay * .062
+            self.fita_tax = self.gross_pay * .06
+            self.medicare_tax = self.gross_pay * .0145
+            self.state_tax = self.gross_pay * .0525
+            self.total_pay = self.gross_pay - self.fica_tax - self.fita_tax - self.medicare_tax - self.state_tax
+
+        # Insert the entry into payroll_history DB
+        cur_date = datetime.now()
+        cur_date_str = datetime.strftime(cur_date, "%Y-%m-%d %H:%M:%S")
+        cursor.execute(f"INSERT INTO dbs1709505.paycheck_history (employee_id, date_time, gross_pay, fica_tax, fita_tax,\
+                       medicare_tax, state_tax) VALUES ({emp_id}, {cur_date_str!r}, {self.gross_pay}, {self.fica_tax},\
+                        {self.fita_tax}, {self.medicare_tax}, {self.state_tax})")
+        db.commit()
+        if debugging:
+            print("Paycheck added to paycheck_history.")
+
+        # Use the record number for the check number
+        cursor.execute("SELECT MAX(id) FROM dbs1709505.paycheck_history")
+        for rec in cursor:
+            self.check_number = rec[0]
+
+        # Update the UI
+        cur_date_only = datetime.strftime(cur_date, "%m-%d-%Y")
+        self.ui.lbl_name.setText(f"Name: {self.first_name}")
+        self.ui.lbl_pay_to.setText(f"Pay to the order of: {self.first_name}")
+        self.ui.lbl_date.setText(f"Date: {cur_date_only}")
+        self.ui.lbl_chk_no.setText(f"Check Number: {self.check_number}")
+        self.ui.lbl_numeric_amt.setText(f"${self.total_pay:.2f}")
+        amounts = f"{self.total_pay:.2f}".split(".")
+        written_dollar_amt = self.num_to_english(int(amounts[0]))
+        written_change_amt = self.num_to_english(int(amounts[1]))
+        self.ui.lbl_written_amt.setText(f"{written_dollar_amt} Dollars and {written_change_amt} cents.")
+
         # Link buttons to methods
         self.ui.btn_ok.clicked.connect(self.exit)
 
     def exit(self):
         self.close()
+
+    def num_to_english(self, number):
+        self.under_20 = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven",
+                    "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"]
+        self.tens = ["", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]
+        self.thousands = ["", "Thousand", "Million", "Billion"]
+        if number == 0:
+            return "Zero"
+        answer = ""
+        i = 0
+        while number > 0:
+            if number % 1000 != 0:
+                answer = self.helper(number % 1000) + self.thousands[i] + " " + answer
+                i += 1
+                number //= 1000
+            return answer.strip()
+
+    def helper(self, n):
+        if n == 0:
+            return ""
+        elif n < 20:
+            return self.under_20[n] + " "
+        elif n < 100:
+            return self.tens[n // 10] + " " + self.helper(n % 10)
+        else:
+            return self.under_20[n // 100] + " Hundred " + self.helper(n % 100)
 
 
 class manufacturing(qtw.QDialog):
