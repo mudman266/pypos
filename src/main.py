@@ -1051,26 +1051,28 @@ class payroll(qtw.QDialog):
     def cut_check(self):
         if self.ui.radioButton_1.isChecked():
             emp = 1
-        if self.ui.radioButton_2.isChecked():
+        elif self.ui.radioButton_2.isChecked():
             emp = 2
-        if self.ui.radioButton_3.isChecked():
+        elif self.ui.radioButton_3.isChecked():
             emp = 3
-        if self.ui.radioButton_4.isChecked():
+        elif self.ui.radioButton_4.isChecked():
             emp = 12
-        if self.ui.radioButton_5.isChecked():
+        elif self.ui.radioButton_5.isChecked():
             emp = 5
-        if self.ui.radioButton_6.isChecked():
+        elif self.ui.radioButton_6.isChecked():
             emp = 6
-        if self.ui.radioButton_7.isChecked():
+        elif self.ui.radioButton_7.isChecked():
             emp = 7
-        if self.ui.radioButton_8.isChecked():
+        elif self.ui.radioButton_8.isChecked():
             emp = 8
-        if self.ui.radioButton_9.isChecked():
+        elif self.ui.radioButton_9.isChecked():
             emp = 9
-        if self.ui.radioButton_10.isChecked():
+        elif self.ui.radioButton_10.isChecked():
             emp = 10
-        if self.ui.radioButton_11.isChecked():
+        elif self.ui.radioButton_11.isChecked():
             emp = 11
+        else:
+            return
         start_date = self.ui.dateEdit_start.date()
         end_date = self.ui.dateEdit_end.date()
         self.window = employee_check(emp, start_date, end_date)
@@ -1079,26 +1081,28 @@ class payroll(qtw.QDialog):
     def time_card(self):
         if self.ui.radioButton_1.isChecked():
             emp = 1
-        if self.ui.radioButton_2.isChecked():
+        elif self.ui.radioButton_2.isChecked():
             emp = 2
-        if self.ui.radioButton_3.isChecked():
+        elif self.ui.radioButton_3.isChecked():
             emp = 3
-        if self.ui.radioButton_4.isChecked():
+        elif self.ui.radioButton_4.isChecked():
             emp = 12
-        if self.ui.radioButton_5.isChecked():
+        elif self.ui.radioButton_5.isChecked():
             emp = 5
-        if self.ui.radioButton_6.isChecked():
+        elif self.ui.radioButton_6.isChecked():
             emp = 6
-        if self.ui.radioButton_7.isChecked():
+        elif self.ui.radioButton_7.isChecked():
             emp = 7
-        if self.ui.radioButton_8.isChecked():
+        elif self.ui.radioButton_8.isChecked():
             emp = 8
-        if self.ui.radioButton_9.isChecked():
+        elif self.ui.radioButton_9.isChecked():
             emp = 9
-        if self.ui.radioButton_10.isChecked():
+        elif self.ui.radioButton_10.isChecked():
             emp = 10
-        if self.ui.radioButton_11.isChecked():
+        elif self.ui.radioButton_11.isChecked():
             emp = 11
+        else:
+            return
         start_date = self.ui.dateEdit_start.date()
         end_date = self.ui.dateEdit_end.date()
         self.window = timecard(emp, start_date, end_date)
@@ -1107,26 +1111,28 @@ class payroll(qtw.QDialog):
     def commission(self):
         if self.ui.radioButton_1.isChecked():
             emp = 1
-        if self.ui.radioButton_2.isChecked():
+        elif self.ui.radioButton_2.isChecked():
             emp = 2
-        if self.ui.radioButton_3.isChecked():
+        elif self.ui.radioButton_3.isChecked():
             emp = 3
-        if self.ui.radioButton_4.isChecked():
+        elif self.ui.radioButton_4.isChecked():
             emp = 12
-        if self.ui.radioButton_5.isChecked():
+        elif self.ui.radioButton_5.isChecked():
             emp = 5
-        if self.ui.radioButton_6.isChecked():
+        elif self.ui.radioButton_6.isChecked():
             emp = 6
-        if self.ui.radioButton_7.isChecked():
+        elif self.ui.radioButton_7.isChecked():
             emp = 7
-        if self.ui.radioButton_8.isChecked():
+        elif self.ui.radioButton_8.isChecked():
             emp = 8
-        if self.ui.radioButton_9.isChecked():
+        elif self.ui.radioButton_9.isChecked():
             emp = 9
-        if self.ui.radioButton_10.isChecked():
+        elif self.ui.radioButton_10.isChecked():
             emp = 10
-        if self.ui.radioButton_11.isChecked():
+        elif self.ui.radioButton_11.isChecked():
             emp = 11
+        else:
+            return
         start_date = self.ui.dateEdit_start.date()
         end_date = self.ui.dateEdit_end.date()
         self.window = commission(emp, start_date, end_date)
