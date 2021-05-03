@@ -795,6 +795,7 @@ class manager(qtw.QDialog):
         self.ui.btn_deposit.clicked.connect(self.deposit)
         self.ui.btn_payroll.clicked.connect(self.payroll)
         self.ui.btn_manufacturin.clicked.connect(self.manufacturing)
+        self.ui.btn_stock.clicked.connect(self.stock)
 
     def exit(self):
         self.close()
@@ -817,6 +818,9 @@ class manager(qtw.QDialog):
         self.window = manufacturing()
         self.window.show()
 
+    def stock(self):
+        self.window = stock()
+        self.window.show()
 
 class enter_deposit(qtw.QDialog):
     def __init__(self, emp_id):
@@ -941,11 +945,9 @@ class stock(qtw.QDialog):
 
         # Link buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
-        self.ui.btn_add_edit_vendo.clicked.connect(self.edit_vendor)
-        # self.ui.btn_edit_item.clicked.connect(self.edit_item)
-        self.ui.btn_add_item.clicked.connect(self.add_item)
-        self.ui.btn_edit_item.clicked.connect(self.edit_item)
+        self.ui.btn_vendor_functs.clicked.connect(self.edit_vendor)
         self.ui.btn_perform_count.clicked.connect(self.inventory_count)
+        self.ui.btn_receive_order.clicked.connect(self.exit)
 
     def exit(self):
         self.close()
@@ -954,16 +956,6 @@ class stock(qtw.QDialog):
         self.close()
         self.vendor_screen = vendors()
         self.vendor_screen.show()
-
-    def add_item(self):
-        self.close()
-        self.item_window = addItem()
-        self.item_window.show()
-
-    def edit_item(self):
-        self.close()
-        self.edit_item_window = editItem()
-        self.edit_item_window.show()
 
     def inventory_count(self):
         self.close()
@@ -996,6 +988,28 @@ class vendors(qtw.QDialog):
 
         # Link buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_add.clicked.connect(self.exit)
+        self.ui.btn_generate.clicked.connect(self.exit)
+
+        # Setup the table
+        self.ui.tableWidget.setRowCount(0)
+        self.ui.tableWidget.setColumnCount(9)
+        self.ui.tableWidget.setHorizontalHeaderLabels(["Name", "Vendor ID", "Street", "City", "State", "Zip", "Contact", "Phone", "Products"])
+
+        # Populate table
+        cursor.execute("SELECT * FROM dbs1709505.vendors")
+        for idx, name, vendor_id, contact_name, phone, address, city, state, zipc, products in cursor:
+            # Add a row
+            self.ui.tableWidget.setRowCount(self.ui.tableWidget.rowCount() + 1)
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 0, qtw.QTableWidgetItem(name))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 1, qtw.QTableWidgetItem(str(vendor_id)))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 2, qtw.QTableWidgetItem(address))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 3, qtw.QTableWidgetItem(city))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 4, qtw.QTableWidgetItem(state))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 5, qtw.QTableWidgetItem(zipc))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 6, qtw.QTableWidgetItem(contact_name))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 7, qtw.QTableWidgetItem(phone))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 8, qtw.QTableWidgetItem(products))
 
     def exit(self):
         self.close()
