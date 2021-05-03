@@ -627,6 +627,20 @@ class newCustomer(qtw.QDialog):
 
         # Connect buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_add.clicked.connect(self.add_cust)
+
+    def add_cust(self):
+        if debugging:
+            print("Adding customer to DB.")
+        if self.ui.rad_female.isChecked():
+            gender = 'F'
+        else:
+            gender = 'M'
+        cursor.execute(f"INSERT INTO dbs1709505.customer (first_name, last_name, address, city, state, zip, gender) VALUES ('{self.ui.line_fname.text()}', '{self.ui.line_lname.text()}', '{self.ui.line_street.text()}', '{self.ui.line_city.text()}', '{self.ui.line_state.text()}', {self.ui.line_zip.text()}, '{gender}')")
+        db.commit()
+        if debugging:
+            print("Customer added.")
+        self.close()
 
     def exit(self):
         self.close()
