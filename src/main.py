@@ -26,6 +26,8 @@ from receipt import Ui_receipt
 from enter_amount import Ui_payment_amount_dialog
 from employee_check import Ui_payroll_check_display
 from timecard import Ui_timecard_dialog
+from commission import Ui_commission_dialog
+
 from PyQt6 import QtWidgets as qtw
 from PyQt6.QtCore import pyqtSignal
 import mysql.connector as mc
@@ -1027,6 +1029,7 @@ class payroll(qtw.QDialog):
         self.ui.btn_cancel.clicked.connect(self.exit)
         self.ui.btn_cut_check.clicked.connect(self.cut_check)
         self.ui.btn_time_card.clicked.connect(self.time_card)
+        self.ui.btn_commission.clicked.connect(self.commission)
 
     def exit(self):
         self.close()
@@ -1086,6 +1089,89 @@ class payroll(qtw.QDialog):
         end_date = self.ui.dateEdit_end.date()
         self.window = timecard(emp, start_date, end_date)
         self.window.show()
+
+    def commission(self):
+        if self.ui.radioButton_1.isChecked():
+            emp = 1
+        if self.ui.radioButton_2.isChecked():
+            emp = 2
+        if self.ui.radioButton_3.isChecked():
+            emp = 3
+        if self.ui.radioButton_4.isChecked():
+            emp = 12
+        if self.ui.radioButton_5.isChecked():
+            emp = 5
+        if self.ui.radioButton_6.isChecked():
+            emp = 6
+        if self.ui.radioButton_7.isChecked():
+            emp = 7
+        if self.ui.radioButton_8.isChecked():
+            emp = 8
+        if self.ui.radioButton_9.isChecked():
+            emp = 9
+        if self.ui.radioButton_10.isChecked():
+            emp = 10
+        if self.ui.radioButton_11.isChecked():
+            emp = 11
+        start_date = self.ui.dateEdit_start.date()
+        end_date = self.ui.dateEdit_end.date()
+        self.window = commission(emp, start_date, end_date)
+        self.window.show()
+
+
+class commission(qtw.QDialog):
+    def __init__(self, emp_id, start, end):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_commission_dialog()
+        self.ui.setupUi(self)
+
+        # Link buttons to methods
+        self.ui.btn_ok.clicked.connect(self.exit)
+
+        # Setup the table
+        self.ui.tableWidget.setRowCount(0)
+        self.ui.tableWidget.setColumnCount(4)
+        self.ui.tableWidget.setHorizontalHeaderLabels(["Sales Date", "Invoice", "Retail Total", "Commission"])
+
+        # Convert Pyqt dates to datetime dates
+        self.start_date = datetime.strptime(str(start.toPyDate()), "%Y-%m-%d")
+        self.end_date = datetime.strptime(str(end.toPyDate()), "%Y-%m-%d")
+        self.start_date_str = datetime.strftime(self.start_date, "%Y-%m-%d %H:%M:%S")
+        self.end_date_str = datetime.strftime(self.end_date, "%Y-%m-%d")
+        self.end_date_str = self.end_date_str + " 23:59:59"
+
+        # Gather sales by employee during period
+        cursor.execute(f"SELECT id, sales_date, subtotal FROM dbs1709505.sales WHERE sales_date >= {self.start_date_str!r} AND sales_date <= {self.end_date_str!r} AND employee_id = {emp_id} AND refunded = 0 AND voided = 0 AND subtotal > 0.0")
+        total_sales = 0.0
+        total_commish = 0.0
+        for inv, dt, sub in cursor:
+            # Add a row
+            self.ui.tableWidget.setRowCount(self.ui.tableWidget.rowCount() + 1)
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 0, qtw.QTableWidgetItem(datetime.strftime(dt, "%m-%d-%Y")))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 1, qtw.QTableWidgetItem(str(inv)))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 2, qtw.QTableWidgetItem(str(sub)))
+            total_sales += float(sub)
+            commish = round((float(sub) * .1), 2)
+            total_commish += commish
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 3, qtw.QTableWidgetItem(str(f"{commish:.2f}")))
+
+        # Update totals
+        self.ui.lbl_total_retail.setText(f"Total Retail: {total_sales:.2f}")
+        self.ui.lbl_total_commission.setText(f"Total Commission: {total_commish:.2f}")
+
+        # Update name and date
+        cursor.execute(f"SELECT first_name from dbs1709505.employee WHERE id = {emp_id}")
+        for name in cursor:
+            self.ui.lbl_salesperson.setText(f"Salesperson: {name[0]}")
+
+        cur_date = datetime.now()
+        cur_date = datetime.strftime(cur_date, "%m-%d-%Y")
+        self.ui.lbl_report_date.setText(f"Report Date: {cur_date}")
+
+    def exit(self):
+        self.close()
 
 
 class timecard(qtw.QDialog):
