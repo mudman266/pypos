@@ -25,6 +25,7 @@ from check_materials import Ui_check_materials_dialog
 from receipt import Ui_receipt
 from enter_amount import Ui_payment_amount_dialog
 from employee_check import Ui_payroll_check_display
+from timecard import Ui_timecard_dialog
 from PyQt6 import QtWidgets as qtw
 from PyQt6.QtCore import pyqtSignal
 import mysql.connector as mc
@@ -1021,9 +1022,11 @@ class payroll(qtw.QDialog):
         self.ui = Ui_payroll_dialog()
         self.ui.setupUi(self)
 
+
         # Link buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
         self.ui.btn_cut_check.clicked.connect(self.cut_check)
+        self.ui.btn_time_card.clicked.connect(self.time_card)
 
     def exit(self):
         self.close()
@@ -1055,6 +1058,111 @@ class payroll(qtw.QDialog):
         end_date = self.ui.dateEdit_end.date()
         self.window = employee_check(emp, start_date, end_date)
         self.window.show()
+
+    def time_card(self):
+        if self.ui.radioButton_1.isChecked():
+            emp = 1
+        if self.ui.radioButton_2.isChecked():
+            emp = 2
+        if self.ui.radioButton_3.isChecked():
+            emp = 3
+        if self.ui.radioButton_4.isChecked():
+            emp = 12
+        if self.ui.radioButton_5.isChecked():
+            emp = 5
+        if self.ui.radioButton_6.isChecked():
+            emp = 6
+        if self.ui.radioButton_7.isChecked():
+            emp = 7
+        if self.ui.radioButton_8.isChecked():
+            emp = 8
+        if self.ui.radioButton_9.isChecked():
+            emp = 9
+        if self.ui.radioButton_10.isChecked():
+            emp = 10
+        if self.ui.radioButton_11.isChecked():
+            emp = 11
+        start_date = self.ui.dateEdit_start.date()
+        end_date = self.ui.dateEdit_end.date()
+        self.window = timecard(emp, start_date, end_date)
+        self.window.show()
+
+
+class timecard(qtw.QDialog):
+    def __init__(self, emp_id, start, end):
+        super().__init__()
+
+        self.total_hours = 0.0
+
+        # Setup the UI
+        self.ui = Ui_timecard_dialog()
+        self.ui.setupUi(self)
+
+        # Convert Pyqt dates to datetime dates
+        self.start_date = datetime.strptime(str(start.toPyDate()), "%Y-%m-%d")
+        self.end_date = datetime.strptime(str(end.toPyDate()), "%Y-%m-%d")
+        self.start_date_str = datetime.strftime(self.start_date, "%Y-%m-%d %H:%M:%S")
+        self.end_date_str = datetime.strftime(self.end_date, "%Y-%m-%d")
+        self.end_date_str = self.end_date_str + " 23:59:59"
+
+        # Find logins in time range
+        if debugging:
+            print(f"Gathering hours for timecard.\nInfo - Emp: {emp_id}\nStart Date: {self.start_date_str!r}\nEnd Date: {self.end_date_str!r}")
+        cursor.execute(f"SELECT time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id} AND time_in >= {self.start_date_str!r} and time_out <= {self.end_date_str!r}")
+
+        # Setup the timecard table
+        self.ui.tableWidget.setRowCount(0)
+        self.ui.tableWidget.setColumnCount(4)
+        self.ui.tableWidget.setHorizontalHeaderLabels(["Date", "Time In", "Time Out", "Hours"])
+
+        # For each login, gather the hours worked
+        for login_time, logout_time in cursor:
+            # Add a row
+            self.ui.tableWidget.setRowCount(self.ui.tableWidget.rowCount() + 1)
+
+            # Date from this login
+            date = datetime.strftime(login_time, "%m-%d-%Y")
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 0, qtw.QTableWidgetItem(date))
+
+            # Time in
+            time_in = datetime.strftime(login_time, "%H:%M:%S")
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 1, qtw.QTableWidgetItem(time_in))
+
+            # Time out
+            time_out = datetime.strftime(logout_time, "%H:%M:%S")
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 2, qtw.QTableWidgetItem(time_out))
+
+            delta = logout_time - login_time
+            if debugging:
+                print(f"Found time delta of: {delta}")
+
+            # Convert the delta to hours
+            worked = str(delta).split(":")
+            self.total_hours += int(worked[0])
+            self.total_hours += int(worked[1]) / 60
+            hours_worked = 0
+            hours_worked += int(worked[0])
+            hours_worked += int(worked[1]) / 60
+
+            # Update hours worked for the row
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 3, qtw.QTableWidgetItem(str(f"{hours_worked:.2f}")))
+        if debugging:
+            print(f"Total hours worked: {self.total_hours:.2f}")
+
+        # Update total hours
+        self.ui.lbl_total_hours.setText(f"Total Hours: {self.total_hours:.2f}")
+
+        # Set name and ID
+        self.ui.lbl_id.setText(f"ID: {emp_id}")
+        cursor.execute(f"SELECT first_name FROM dbs1709505.employee WHERE id = {emp_id}")
+        for result in cursor:
+            self.ui.lbl_name.setText(f"Name: {result[0]}")
+
+        # Link buttons to methods
+        self.ui.btn_ok.clicked.connect(self.exit)
+
+    def exit(self):
+        self.close()
 
 
 class employee_check(qtw.QDialog):
