@@ -1183,6 +1183,12 @@ class employee_check(qtw.QDialog):
         self.ui.tableWidget_2.setVerticalHeaderLabels(["Gross Pay", "FICA", "FITA", "Med", "State", "Net Pay"])
         self.ui.tableWidget_2.setHorizontalHeaderLabels(["Current", "Year to Date"])
 
+        # Top info table
+        self.ui.tableWidget.setRowCount(1)
+        self.ui.tableWidget.setColumnCount(1)
+        self.ui.tableWidget.setHorizontalHeaderLabels(["SSN"])
+        self.ui.tableWidget.setItem(0, 0, qtw.QTableWidgetItem(f"{self.ssn}"))
+
         # Current paycheck table
         self.ui.tableWidget_2.setItem(0, 0, qtw.QTableWidgetItem(f"{self.gross_pay:.2f}"))
         self.ui.tableWidget_2.setItem(1, 0, qtw.QTableWidgetItem(f"{self.fica_tax:.2f}"))
