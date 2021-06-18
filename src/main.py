@@ -589,11 +589,41 @@ class customerLookup(qtw.QDialog):
         # Link buttons to methods
         self.ui.btn_cancel.clicked.connect(self.exit)
         self.ui.btn_new_customer.clicked.connect(self.new_customer)
+        self.ui.btn_search.clicked.connect(self.search_customer)
 
     def exit(self):
         self.close()
 
     def search_customer(self):
+        # Find the customer based on input data
+        if debugging:
+            print("Beginning search routine.")
+        if self.ui.line_lname.text().strip():
+            if debugging:
+                print("Last name detected. Searching...")
+            cursor.execute(f"SELECT * FROM dbs1709505.customer WHERE last_name LIKE '%{self.ui.line_lname.text()}%'")
+            # Check for 0 results
+            if debugging:
+                print(f"Row count: {cursor.rowcount}")
+            if cursor.rowcount < 1:
+                error_window = qtw.QDialog(self)
+                error_window.setWindowTitle("No Results")
+                error_window.QBtn = qtw.QDialogButtonBox.StandardButtons.Ok
+                error_window.buttonBox = qtw.QDialogButtonBox(error_window.QBtn)
+                # TODO - Fix this button to be clickable
+                error_window.buttonBox.clicked.connect(self.close())
+                error_window.layout = qtw.QVBoxLayout()
+                message = qtw.QLabel("That search returned 0 results. Try again.")
+                error_window.layout.addWidget(message)
+                error_window.layout.addWidget(error_window.buttonBox)
+                error_window.setLayout(error_window.layout)
+                error_window.exec()
+            #for id, fname, lname, address, city, state, zip, gender, balance in cursor:
+        else:
+            if debugging:
+                print("Last name empty.")
+
+
         self.close()
         self.search_reults = search_customer_results()
         self.search_reults.show()
@@ -615,12 +645,22 @@ class search_customer_results(qtw.QDialog):
         # Link buttons to methods
         self.ui.btn_select.clicked.connect(self.select_customer)
         self.ui.btn_cancel.clicked.connect(self.exit)
+        self.ui.btn_up.clicked.connect(self.up)
+        self.ui.btn_down.clicked.connect(self.down)
 
     def exit(self):
         self.close()
 
     def select_customer(self):
         self.close()
+
+    def up(self):
+        True
+        # TODO: Make it move
+
+    def down(self):
+        True
+        # TODO: Make it move
 
         # TODO: Return customer record to the make sale screen
 
@@ -685,6 +725,8 @@ class selectEmployee(qtw.QDialog):
         self.ui = Ui_time_clock_dialog()
         self.ui.setupUi(self)
 
+        # TODO: Make the employee list dynamic
+
         # Link buttons to methods
         self.ui.btn_emp_1.clicked.connect(self.btn_1)
         self.ui.btn_emp_2.clicked.connect(self.btn_2)
@@ -700,7 +742,6 @@ class selectEmployee(qtw.QDialog):
 
     def exit(self):
         self.close()
-    # TODO: Create method to login/logout emp
 
     def btn_1(self):
         self.time_clock(1)
