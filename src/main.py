@@ -224,7 +224,8 @@ class makeSale(qtw.QMainWindow):
             print("Datetime: {}".format(timestampStr))
             print("Attempting to create new sale....")
 
-        cursor.execute(f"INSERT INTO dbs1709505.sales (sessions_id, employee_id, sales_date, sales_tax, subtotal) VALUES ({cur_session[0]}, {int(emp_id)}, {timestampStr!r}, 0.0, 0.0)")
+        cursor.execute(f"INSERT INTO dbs1709505.sales (sessions_id, employee_id, sales_date, sales_tax, subtotal)\
+         VALUES ({cur_session[0]}, {int(emp_id)}, {timestampStr!r}, 0.0, 0.0)")
         if debugging:
             print("Cursor executed. Committing....")
         db.commit()
@@ -260,7 +261,8 @@ class makeSale(qtw.QMainWindow):
             # tops are groups 1,4,5,6, and 8
             if debugging:
                 print("Asked for tops. Gathering tops...")
-            cursor.execute(f"SELECT ID, name, price FROM dbs1709505.stock WHERE stock_group=1 or stock_group=4 or stock_group=5 or stock_group=6 or stock_group=8")
+            cursor.execute(f"SELECT ID, name, price FROM dbs1709505.stock WHERE stock_group=1 or stock_group=4 or \
+                stock_group=5 or stock_group=6 or stock_group=8")
             self.items = []
             for item in cursor:
                 if debugging:
@@ -330,7 +332,8 @@ class makeSale(qtw.QMainWindow):
         # Adds a selected item to the chit
         if debugging:
             print(f"Adding Item id: {args[0]} to Sale id: {args[1][0][0]}")
-        cursor.execute(f"INSERT INTO dbs1709505.sales_detail (sales_id, stock_id, qty, needs_mfg) VALUES ({args[1][0][0]}, {args[0]}, 1, 0)")
+        cursor.execute(f"INSERT INTO dbs1709505.sales_detail (sales_id, stock_id, qty, needs_mfg) VALUES \
+            ({args[1][0][0]}, {args[0]}, 1, 0)")
         db.commit()
         if debugging:
             print("Item added to sales_detail.")
@@ -399,7 +402,8 @@ class settle(qtw.QMainWindow):
             self.paid_amt = 0.0
 
         # Update the sale database with the tax and subtotal
-        cursor.execute(f"UPDATE dbs1709505.sales SET sales_tax = {tax}, subtotal = {subtotal} WHERE id = {sales_id[0][0]}")
+        cursor.execute(f"UPDATE dbs1709505.sales SET sales_tax = {tax}, subtotal = {subtotal} WHERE id = \
+            {sales_id[0][0]}")
         db.commit()
 
         # Setup the UI
@@ -617,6 +621,7 @@ class search_customer_results(qtw.QDialog):
 
     def select_customer(self):
         self.close()
+
         # TODO: Return customer record to the make sale screen
 
 
@@ -639,7 +644,9 @@ class newCustomer(qtw.QDialog):
             gender = 'F'
         else:
             gender = 'M'
-        cursor.execute(f"INSERT INTO dbs1709505.customer (first_name, last_name, address, city, state, zip, gender) VALUES ('{self.ui.line_fname.text()}', '{self.ui.line_lname.text()}', '{self.ui.line_street.text()}', '{self.ui.line_city.text()}', '{self.ui.line_state.text()}', {self.ui.line_zip.text()}, '{gender}')")
+        cursor.execute(f"INSERT INTO dbs1709505.customer (first_name, last_name, address, city, state, zip, gender)\
+            VALUES ('{self.ui.line_fname.text()}', '{self.ui.line_lname.text()}', '{self.ui.line_street.text()}',\
+            '{self.ui.line_city.text()}', '{self.ui.line_state.text()}', {self.ui.line_zip.text()}, '{gender}')")
         db.commit()
         if debugging:
             print("Customer added.")
@@ -738,7 +745,8 @@ class selectEmployee(qtw.QDialog):
         cur_date_string = datetime.strftime(cur_date, "%Y-%m-%d")
         cur_date_string = cur_date_string
         # Get all logins from today
-        cursor.execute(f"SELECT id, time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id} AND time_in LIKE CONCAT({cur_date_string!r}, '%')")
+        cursor.execute(f"SELECT id, time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id} AND time_in \
+            LIKE CONCAT({cur_date_string!r}, '%')")
         for login_id, time_in, time_out in cursor:
             logins.append([login_id, time_in, time_out])
         if debugging:
@@ -994,7 +1002,8 @@ class vendors(qtw.QDialog):
         # Setup the table
         self.ui.tableWidget.setRowCount(0)
         self.ui.tableWidget.setColumnCount(9)
-        self.ui.tableWidget.setHorizontalHeaderLabels(["Name", "Vendor ID", "Street", "City", "State", "Zip", "Contact", "Phone", "Products"])
+        self.ui.tableWidget.setHorizontalHeaderLabels(["Name", "Vendor ID", "Street", "City", "State", "Zip",
+                                                       "Contact", "Phone", "Products"])
 
         # Populate table
         cursor.execute("SELECT * FROM dbs1709505.vendors")
@@ -1163,19 +1172,23 @@ class commission(qtw.QDialog):
         self.end_date_str = self.end_date_str + " 23:59:59"
 
         # Gather sales by employee during period
-        cursor.execute(f"SELECT id, sales_date, subtotal FROM dbs1709505.sales WHERE sales_date >= {self.start_date_str!r} AND sales_date <= {self.end_date_str!r} AND employee_id = {emp_id} AND refunded = 0 AND voided = 0 AND subtotal > 0.0")
+        cursor.execute(f"SELECT id, sales_date, subtotal FROM dbs1709505.sales WHERE sales_date >= \
+            {self.start_date_str!r} AND sales_date <= {self.end_date_str!r} AND employee_id = {emp_id} \
+            AND refunded = 0 AND voided = 0 AND subtotal > 0.0")
         total_sales = 0.0
         total_commish = 0.0
         for inv, dt, sub in cursor:
             # Add a row
             self.ui.tableWidget.setRowCount(self.ui.tableWidget.rowCount() + 1)
-            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 0, qtw.QTableWidgetItem(datetime.strftime(dt, "%m-%d-%Y")))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 0,
+                                        qtw.QTableWidgetItem(datetime.strftime(dt, "%m-%d-%Y")))
             self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 1, qtw.QTableWidgetItem(str(inv)))
             self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 2, qtw.QTableWidgetItem(str(sub)))
             total_sales += float(sub)
             commish = round((float(sub) * .1), 2)
             total_commish += commish
-            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 3, qtw.QTableWidgetItem(str(f"{commish:.2f}")))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 3,
+                                        qtw.QTableWidgetItem(str(f"{commish:.2f}")))
 
         # Update totals
         self.ui.lbl_total_retail.setText(f"Total Retail: {total_sales:.2f}")
@@ -1213,8 +1226,10 @@ class timecard(qtw.QDialog):
 
         # Find logins in time range
         if debugging:
-            print(f"Gathering hours for timecard.\nInfo - Emp: {emp_id}\nStart Date: {self.start_date_str!r}\nEnd Date: {self.end_date_str!r}")
-        cursor.execute(f"SELECT time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id} AND time_in >= {self.start_date_str!r} and time_out <= {self.end_date_str!r}")
+            print(f"Gathering hours for timecard.\nInfo - Emp: {emp_id}\nStart Date: {self.start_date_str!r}\n"
+                  f"End Date: {self.end_date_str!r}")
+        cursor.execute(f"SELECT time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id} AND time_in "
+                       f">= {self.start_date_str!r} and time_out <= {self.end_date_str!r}")
 
         # Setup the timecard table
         self.ui.tableWidget.setRowCount(0)
@@ -1251,7 +1266,8 @@ class timecard(qtw.QDialog):
             hours_worked += int(worked[1]) / 60
 
             # Update hours worked for the row
-            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 3, qtw.QTableWidgetItem(str(f"{hours_worked:.2f}")))
+            self.ui.tableWidget.setItem(self.ui.tableWidget.rowCount() - 1, 3,
+                                        qtw.QTableWidgetItem(str(f"{hours_worked:.2f}")))
         if debugging:
             print(f"Total hours worked: {self.total_hours:.2f}")
 
@@ -1290,8 +1306,10 @@ class employee_check(qtw.QDialog):
 
         # Find logins in time range
         if debugging:
-            print(f"Generating an employee check.\nInfo - Emp: {emp_id}\nStart Date: {self.start_date_str!r}\nEnd Date: {self.end_date_str!r}")
-        cursor.execute(f"SELECT time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id} AND time_in >= {self.start_date_str!r} and time_out <= {self.end_date_str!r}")
+            print(f"Generating an employee check.\nInfo - Emp: {emp_id}\nStart Date: "
+                  f"{self.start_date_str!r}\nEnd Date: {self.end_date_str!r}")
+        cursor.execute(f"SELECT time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id} AND time_in "
+                       f">= {self.start_date_str!r} and time_out <= {self.end_date_str!r}")
 
         # For each login, gather the hours worked
         for login_time, logout_time in cursor:
@@ -1367,9 +1385,9 @@ class employee_check(qtw.QDialog):
         # Insert the entry into payroll_history DB
         cur_date = datetime.now()
         cur_date_str = datetime.strftime(cur_date, "%Y-%m-%d %H:%M:%S")
-        cursor.execute(f"INSERT INTO dbs1709505.paycheck_history (employee_id, date_time, gross_pay, fica_tax, fita_tax,\
-                       medicare_tax, state_tax) VALUES ({emp_id}, {cur_date_str!r}, {self.gross_pay}, {self.fica_tax},\
-                        {self.fita_tax}, {self.medicare_tax}, {self.state_tax})")
+        cursor.execute(f"INSERT INTO dbs1709505.paycheck_history (employee_id, date_time, gross_pay, fica_tax, "
+                       f"fita_tax, medicare_tax, state_tax) VALUES ({emp_id}, {cur_date_str!r}, {self.gross_pay}, "
+                       f"{self.fica_tax}, {self.fita_tax}, {self.medicare_tax}, {self.state_tax})")
         db.commit()
         if debugging:
             print("Paycheck added to paycheck_history.")
