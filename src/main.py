@@ -240,6 +240,7 @@ class makeSale(qtw.QMainWindow):
             print(f"Gathered sale id: {self.sale_id[0][0]}")
 
         # First group is tops
+        # Todo: Make this dynamic. Add a spot in setup to choose which window to display.
         self.populate_grid("tops")
 
     def show_manager(self):
@@ -600,33 +601,32 @@ class customerLookup(qtw.QDialog):
             print("Beginning search routine.")
         if self.ui.line_lname.text().strip():
             if debugging:
-                print("Last name detected. Searching...")
+                print(f"Last name detected: {self.ui.line_lname.text()}. Searching...")
             cursor.execute(f"SELECT * FROM dbs1709505.customer WHERE last_name LIKE '%{self.ui.line_lname.text()}%'")
             # Check for 0 results
+            cursor.fetchall()
             if debugging:
                 print(f"Row count: {cursor.rowcount}")
             if cursor.rowcount < 1:
                 error_window = qtw.QDialog(self)
                 error_window.setWindowTitle("No Results")
-                error_window.QBtn = qtw.QDialogButtonBox.StandardButtons.Ok
-                error_window.buttonBox = qtw.QDialogButtonBox(error_window.QBtn)
-                # TODO - Fix this button to be clickable
-                error_window.buttonBox.clicked.connect(self.close())
+                QBtn = qtw.QDialogButtonBox.StandardButtons.Ok
+                error_window.buttonBox = qtw.QDialogButtonBox(QBtn)
+                error_window.buttonBox.accepted.connect(error_window.close)
                 error_window.layout = qtw.QVBoxLayout()
                 message = qtw.QLabel("That search returned 0 results. Try again.")
                 error_window.layout.addWidget(message)
                 error_window.layout.addWidget(error_window.buttonBox)
                 error_window.setLayout(error_window.layout)
                 error_window.exec()
-            #for id, fname, lname, address, city, state, zip, gender, balance in cursor:
+            else:
+                # Record(s) found. Pass them to the customer results window
+                self.close()
+                self.search_reults = search_customer_results()
+                self.search_reults.show()
         else:
             if debugging:
                 print("Last name empty.")
-
-
-        self.close()
-        self.search_reults = search_customer_results()
-        self.search_reults.show()
 
     def new_customer(self):
         self.close()
@@ -641,12 +641,30 @@ class search_customer_results(qtw.QDialog):
         # Setup the UI
         self.ui = Ui_select_account_dialog()
         self.ui.setupUi(self)
+        self.ui.tableWidget_customers.setRowCount(cursor.rowcount)
+        self.ui.tableWidget_customers.setColumnCount(6)
+        self.ui.tableWidget_customers.setHorizontalHeaderLabels(["ID", "First", "Last", "Address", "City", "State", "Zip"])
 
         # Link buttons to methods
         self.ui.btn_select.clicked.connect(self.select_customer)
         self.ui.btn_cancel.clicked.connect(self.exit)
         self.ui.btn_up.clicked.connect(self.up)
         self.ui.btn_down.clicked.connect(self.down)
+
+        # Populate the table
+        i = 0
+        # for cust_id, fname, lname, address, city, state, zipcode, gender, balance in cursor:
+        if debugging:
+            print(f"Row count is now: {cursor.rowcount}")
+        for row in cursor:
+            self.ui.tableWidget_customers.setItem(i, 0, qtw.QTableWidgetItem(str(row[0])))
+            self.ui.tableWidget_customers.setItem(i, 1, qtw.QTableWidgetItem(row[1]))
+            self.ui.tableWidget_customers.setItem(i, 2, qtw.QTableWidgetItem(row[2]))
+            self.ui.tableWidget_customers.setItem(i, 3, qtw.QTableWidgetItem(row[3]))
+            self.ui.tableWidget_customers.setItem(i, 4, qtw.QTableWidgetItem(row[4]))
+            self.ui.tableWidget_customers.setItem(i, 5, qtw.QTableWidgetItem(row[5]))
+            self.ui.tableWidget_customers.setItem(i, 6, qtw.QTableWidgetItem(row[6]))
+            i += 1
 
     def exit(self):
         self.close()
