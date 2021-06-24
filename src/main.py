@@ -604,7 +604,7 @@ class customerLookup(qtw.QDialog):
                 print(f"Last name detected: {self.ui.line_lname.text()}. Searching...")
             cursor.execute(f"SELECT * FROM dbs1709505.customer WHERE last_name LIKE '%{self.ui.line_lname.text()}%'")
             # Check for 0 results
-            cursor.fetchall()
+            records = cursor.fetchall()
             if debugging:
                 print(f"Row count: {cursor.rowcount}")
             if cursor.rowcount < 1:
@@ -622,7 +622,7 @@ class customerLookup(qtw.QDialog):
             else:
                 # Record(s) found. Pass them to the customer results window
                 self.close()
-                self.search_reults = search_customer_results()
+                self.search_reults = search_customer_results(records)
                 self.search_reults.show()
         else:
             if debugging:
@@ -635,7 +635,7 @@ class customerLookup(qtw.QDialog):
 
 
 class search_customer_results(qtw.QDialog):
-    def __init__(self):
+    def __init__(self, recs):
         super().__init__()
 
         # Setup the UI
@@ -643,7 +643,10 @@ class search_customer_results(qtw.QDialog):
         self.ui.setupUi(self)
         self.ui.tableWidget_customers.setRowCount(cursor.rowcount)
         self.ui.tableWidget_customers.setColumnCount(6)
-        self.ui.tableWidget_customers.setHorizontalHeaderLabels(["ID", "First", "Last", "Address", "City", "State", "Zip"])
+        self.ui.tableWidget_customers.setHorizontalHeaderLabels(["ID", "First", "Last", "Address", "City", "State",
+                                                                 "Zip"])
+        # Hide the vertical header (row #)
+        self.ui.tableWidget_customers.verticalHeader().setVisible(False)
 
         # Link buttons to methods
         self.ui.btn_select.clicked.connect(self.select_customer)
@@ -653,10 +656,9 @@ class search_customer_results(qtw.QDialog):
 
         # Populate the table
         i = 0
-        # for cust_id, fname, lname, address, city, state, zipcode, gender, balance in cursor:
         if debugging:
             print(f"Row count is now: {cursor.rowcount}")
-        for row in cursor:
+        for row in recs:
             self.ui.tableWidget_customers.setItem(i, 0, qtw.QTableWidgetItem(str(row[0])))
             self.ui.tableWidget_customers.setItem(i, 1, qtw.QTableWidgetItem(row[1]))
             self.ui.tableWidget_customers.setItem(i, 2, qtw.QTableWidgetItem(row[2]))
