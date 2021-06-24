@@ -599,34 +599,69 @@ class customerLookup(qtw.QDialog):
         # Find the customer based on input data
         if debugging:
             print("Beginning search routine.")
+
+        # Check last name
         if self.ui.line_lname.text().strip():
             if debugging:
                 print(f"Last name detected: {self.ui.line_lname.text()}. Searching...")
             cursor.execute(f"SELECT * FROM dbs1709505.customer WHERE last_name LIKE '%{self.ui.line_lname.text()}%'")
             # Check for 0 results
-            records = cursor.fetchall()
+
+        # Check first name
+        elif self.ui.line_fname.text().strip():
             if debugging:
-                print(f"Row count: {cursor.rowcount}")
-            if cursor.rowcount < 1:
-                error_window = qtw.QDialog(self)
-                error_window.setWindowTitle("No Results")
-                QBtn = qtw.QDialogButtonBox.StandardButtons.Ok
-                error_window.buttonBox = qtw.QDialogButtonBox(QBtn)
-                error_window.buttonBox.accepted.connect(error_window.close)
-                error_window.layout = qtw.QVBoxLayout()
-                message = qtw.QLabel("That search returned 0 results. Try again.")
-                error_window.layout.addWidget(message)
-                error_window.layout.addWidget(error_window.buttonBox)
-                error_window.setLayout(error_window.layout)
-                error_window.exec()
-            else:
-                # Record(s) found. Pass them to the customer results window
-                self.close()
-                self.search_reults = search_customer_results(records)
-                self.search_reults.show()
+                print("Last name empty. Checking first name.")
+            if self.ui.line_fname.text().strip():
+                if debugging:
+                    print(f"First name detected: {self.ui.line_lname.text()}. Searching...")
+                cursor.execute(
+                    f"SELECT * FROM dbs1709505.customer WHERE first_name LIKE '%{self.ui.line_fname.text()}%'")
+
+        # Check phone number
+        elif self.ui.line_phone.text().strip():
+            if debugging:
+                print("First name empty. Checking phone number.")
+            if self.ui.line_phone.text().strip():
+                if debugging:
+                    print(f"Phone number detected: {self.ui.line_phone.text()}. Searching...")
+                cursor.execute(
+                    f"SELECT * FROM dbs1709505.customer WHERE phone LIKE '%{self.ui.line_phone.text()}%'")
+
+        # Check address
+        elif self.ui.line_address.text().strip():
+            if debugging:
+                print("Phone number empty. Checking address.")
+            if self.ui.line_address.text().strip():
+                if debugging:
+                    print(f"Address detected: {self.ui.line_address.text()}. Searching...")
+                cursor.execute(
+                    f"SELECT * FROM dbs1709505.customer WHERE address LIKE '%{self.ui.line_address.text()}%'")
+                # Check for 0 results
+                records = cursor.fetchall()
+                if debugging:
+                    print(f"Row count: {cursor.rowcount}")
+
+        # Check for results
+        records = cursor.fetchall()
+        if debugging:
+            print(f"Row count: {cursor.rowcount}")
+        if cursor.rowcount < 1:
+            error_window = qtw.QDialog(self)
+            error_window.setWindowTitle("No Results")
+            QBtn = qtw.QDialogButtonBox.StandardButtons.Ok
+            error_window.buttonBox = qtw.QDialogButtonBox(QBtn)
+            error_window.buttonBox.accepted.connect(error_window.close)
+            error_window.layout = qtw.QVBoxLayout()
+            message = qtw.QLabel("That search returned 0 results. Try again.")
+            error_window.layout.addWidget(message)
+            error_window.layout.addWidget(error_window.buttonBox)
+            error_window.setLayout(error_window.layout)
+            error_window.exec()
         else:
-            if debugging:
-                print("Last name empty.")
+            # Record(s) found. Pass them to the customer results window
+            self.close()
+            self.search_reults = search_customer_results(records)
+            self.search_reults.show()
 
     def new_customer(self):
         self.close()
@@ -642,8 +677,8 @@ class search_customer_results(qtw.QDialog):
         self.ui = Ui_select_account_dialog()
         self.ui.setupUi(self)
         self.ui.tableWidget_customers.setRowCount(cursor.rowcount)
-        self.ui.tableWidget_customers.setColumnCount(6)
-        self.ui.tableWidget_customers.setHorizontalHeaderLabels(["ID", "First", "Last", "Address", "City", "State",
+        self.ui.tableWidget_customers.setColumnCount(7)
+        self.ui.tableWidget_customers.setHorizontalHeaderLabels(["ID", "First", "Last", "Phone", "Address", "City", "State",
                                                                  "Zip"])
         # Hide the vertical header (row #)
         self.ui.tableWidget_customers.verticalHeader().setVisible(False)
@@ -666,6 +701,7 @@ class search_customer_results(qtw.QDialog):
             self.ui.tableWidget_customers.setItem(i, 4, qtw.QTableWidgetItem(row[4]))
             self.ui.tableWidget_customers.setItem(i, 5, qtw.QTableWidgetItem(row[5]))
             self.ui.tableWidget_customers.setItem(i, 6, qtw.QTableWidgetItem(row[6]))
+            self.ui.tableWidget_customers.setItem(i, 7, qtw.QTableWidgetItem(row[7]))
             i += 1
 
     def exit(self):
