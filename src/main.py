@@ -35,17 +35,17 @@ from datetime import datetime
 import num2words as n2w
 import yaml
 
-credentials = yaml.load(open('./secrets.yml'))
+credentials = yaml.safe_load(open('c:/school/capstone/pyofsale/src/sec/secrets.yml'))
 
 debugging = True
 
-cursor = db.cursor()
 db = mc.connect(
-                credentials['database']['host'],
-                credentials['database']['user'],
-                credentials['database']['password'],
-                credentials['database']['charset']
+                host=credentials['database']['host'],
+                user=credentials['database']['user'],
+                password=credentials['database']['password'],
+                charset=credentials['database']['charset']
             )
+cursor = db.cursor()
 
 # Set the current session number
 cursor.execute("SELECT ID FROM dbs1709505.sessions")
