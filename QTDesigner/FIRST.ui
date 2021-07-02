@@ -24,8 +24,8 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="2">
-      <widget class="QPushButton" name="btn_timeclock">
+     <item row="0" column="3">
+      <widget class="QPushButton" name="btn_quit">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -42,12 +42,10 @@
         <font>
          <family>Book Antiqua</family>
          <pointsize>20</pointsize>
-         <stylestrategy>PreferAntialias</stylestrategy>
         </font>
        </property>
        <property name="text">
-        <string>Time
-Clock</string>
+        <string>Quit</string>
        </property>
       </widget>
      </item>
@@ -89,8 +87,8 @@ Clock</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="btn_quit">
+     <item row="0" column="2">
+      <widget class="QPushButton" name="btn_timeclock">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -107,10 +105,12 @@ Clock</string>
         <font>
          <family>Book Antiqua</family>
          <pointsize>20</pointsize>
+         <stylestrategy>PreferAntialias</stylestrategy>
         </font>
        </property>
        <property name="text">
-        <string>Quit</string>
+        <string>Time
+Clock</string>
        </property>
       </widget>
      </item>

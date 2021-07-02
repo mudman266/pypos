@@ -33,9 +33,9 @@ from PyQt6.QtCore import pyqtSignal
 import mysql.connector as mc
 from datetime import datetime
 import num2words as n2w
-import yaml
+from yaml import safe_load as load
 
-credentials = yaml.safe_load(open('c:/school/capstone/pyofsale/src/sec/secrets.yml'))
+credentials = load(open('c:/school/capstone/pyofsale/src/sec/secrets.yml'))
 
 debugging = True
 
@@ -65,7 +65,7 @@ class PyPOS(qtw.QMainWindow):
         self.ui.setupUi(self)
 
         # Define the windows that can be reached from here
-        self.begin_window = Begin()
+        # self.begin_window = Begin()
         self.time_clock_window = selectEmployee()
 
         # Connect the buttons to methods
@@ -127,7 +127,13 @@ class PasswordEntry(qtw.QDialog):
                 empid = row[0]
                 print("Set empid to {}".format(empid))
             print("Login Success")
-            self.load_sale_window(empid)
+            self.show_begin(empid)
+            # self.load_sale_window(empid)
+
+    def show_begin(self, emp_id):
+        self.window = Begin(emp_id)
+        self.window.show()
+        self.close()
 
     def load_sale_window(self, emp_id):
         self.sale_window = makeSale(str(emp_id))
@@ -184,13 +190,41 @@ class PasswordEntry(qtw.QDialog):
 
 
 class Begin(qtw.QMainWindow):
-    def __init__(self):
+    def __init__(self, emp_id):
         super().__init__()
-        self.ui2 = Ui_BeginWindow()
-        self.ui2.setupUi(self)
-        self.ui2.btn_sale_2.clicked.connect(self.exit)
 
-    def exit(self):
+        self.employee_id = str(emp_id)
+        # Setup the UI
+        self.ui = Ui_BeginWindow()
+        self.ui.setupUi(self)
+
+        # Link the buttons
+        self.ui.btn_cancel.clicked.connect(self.close)
+        self.ui.btn_sale.clicked.connect(self.show_sale)
+        self.ui.btn_void.clicked.connect(self.show_void)
+        self.ui.btn_manager.clicked.connect(self.show_manager)
+        self.ui.btn_cash_tray_options.clicked.connect(self.show_cash_tray_options)
+
+    def show_sale(self):
+        self.window = makeSale(self.employee_id)
+        self.window.show()
+        self.close()
+
+    def show_void(self):
+        # TODO - make and link the void window
+        self.window = None
+        self.window.show()
+        self.close()
+
+    def show_manager(self):
+        self.window = manager(self.employee_id)
+        self.window.show()
+        self.close()
+
+    def show_cash_tray_options(self):
+        # TODO - make and link the cash tray options window
+        self.window = None
+        self.window.show()
         self.close()
 
 

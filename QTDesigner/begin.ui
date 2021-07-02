@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>206</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,6 +24,44 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="3">
+      <widget class="QPushButton" name="btn_manager">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>20</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>12</width>
+         <height>2</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Bookman Old Style</family>
+         <pointsize>16</pointsize>
+         <stylestrategy>PreferAntialias</stylestrategy>
+        </font>
+       </property>
+       <property name="text">
+        <string>Manager</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="1">
       <widget class="QPushButton" name="btn_void">
        <property name="sizePolicy">
@@ -142,8 +180,8 @@ Options</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="btn_manufacturing">
+     <item row="0" column="4">
+      <widget class="QPushButton" name="btn_cancel">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -171,60 +209,16 @@ Options</string>
        <property name="font">
         <font>
          <family>Bookman Old Style</family>
-         <pointsize>15</pointsize>
+         <pointsize>22</pointsize>
          <stylestrategy>PreferAntialias</stylestrategy>
         </font>
        </property>
        <property name="text">
-        <string>Assembly</string>
+        <string>Cancel</string>
        </property>
       </widget>
      </item>
     </layout>
-   </widget>
-   <widget class="QPushButton" name="btn_sale_2">
-    <property name="geometry">
-     <rect>
-      <x>670</x>
-      <y>440</y>
-      <width>100</width>
-      <height>100</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-      <horstretch>0</horstretch>
-      <verstretch>20</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>100</width>
-      <height>100</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>100</width>
-      <height>100</height>
-     </size>
-    </property>
-    <property name="baseSize">
-     <size>
-      <width>12</width>
-      <height>2</height>
-     </size>
-    </property>
-    <property name="font">
-     <font>
-      <family>Bookman Old Style</family>
-      <pointsize>22</pointsize>
-      <stylestrategy>PreferAntialias</stylestrategy>
-     </font>
-    </property>
-    <property name="text">
-     <string>Exit</string>
-    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

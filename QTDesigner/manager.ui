@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>501</width>
-    <height>437</height>
+    <width>504</width>
+    <height>381</height>
    </rect>
   </property>
   <property name="font">
@@ -41,12 +41,12 @@
      <x>9</x>
      <y>59</y>
      <width>481</width>
-     <height>361</height>
+     <height>311</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QPushButton" name="btn_cancel">
+    <item row="1" column="1">
+     <widget class="QPushButton" name="btn_stock">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -74,12 +74,52 @@
       <property name="font">
        <font>
         <family>Bookman Old Style</family>
-        <pointsize>22</pointsize>
+        <pointsize>18</pointsize>
         <stylestrategy>PreferAntialias</stylestrategy>
        </font>
       </property>
       <property name="text">
-       <string>Cancel</string>
+       <string>Stock</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QPushButton" name="btn_eod">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>20</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="baseSize">
+       <size>
+        <width>12</width>
+        <height>2</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Bookman Old Style</family>
+        <pointsize>18</pointsize>
+        <stylestrategy>PreferAntialias</stylestrategy>
+       </font>
+      </property>
+      <property name="text">
+       <string>End
+Of
+Day</string>
       </property>
      </widget>
     </item>
@@ -159,44 +199,6 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
-     <widget class="QPushButton" name="btn_stock">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>20</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>100</width>
-        <height>100</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>100</width>
-        <height>100</height>
-       </size>
-      </property>
-      <property name="baseSize">
-       <size>
-        <width>12</width>
-        <height>2</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <family>Bookman Old Style</family>
-        <pointsize>18</pointsize>
-        <stylestrategy>PreferAntialias</stylestrategy>
-       </font>
-      </property>
-      <property name="text">
-       <string>Stock</string>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="2">
      <widget class="QPushButton" name="btn_payroll">
       <property name="sizePolicy">
@@ -235,8 +237,8 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="2">
-     <widget class="QPushButton" name="btn_eod">
+    <item row="1" column="0">
+     <widget class="QPushButton" name="btn_cancel">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -264,14 +266,50 @@
       <property name="font">
        <font>
         <family>Bookman Old Style</family>
-        <pointsize>18</pointsize>
+        <pointsize>22</pointsize>
         <stylestrategy>PreferAntialias</stylestrategy>
        </font>
       </property>
       <property name="text">
-       <string>End
-Of
-Day</string>
+       <string>Cancel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QPushButton" name="btn_employees">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>20</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="baseSize">
+       <size>
+        <width>12</width>
+        <height>2</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Bookman Old Style</family>
+        <pointsize>13</pointsize>
+        <stylestrategy>PreferAntialias</stylestrategy>
+       </font>
+      </property>
+      <property name="text">
+       <string>Employees</string>
       </property>
      </widget>
     </item>
