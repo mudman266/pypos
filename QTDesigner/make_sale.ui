@@ -26,6 +26,18 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QPushButton" name="btn_tops">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>100</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <family>Book Antiqua</family>
@@ -39,6 +51,18 @@
      </item>
      <item>
       <widget class="QPushButton" name="btn_bottoms">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>100</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <family>Book Antiqua</family>
@@ -52,6 +76,18 @@
      </item>
      <item>
       <widget class="QPushButton" name="btn_ties">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>100</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <family>Book Antiqua</family>
@@ -152,7 +188,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_manager">
+      <widget class="QPushButton" name="btn_discount">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -185,7 +221,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Manager</string>
+        <string>Discount</string>
        </property>
       </widget>
      </item>

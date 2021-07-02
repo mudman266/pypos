@@ -20,6 +20,7 @@ class Ui_discount_check_dialog(object):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
         self.btn_percent = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        self.btn_percent.setMinimumSize(QtCore.QSize(0, 100))
         font = QtGui.QFont()
         font.setFamily("Book Antiqua")
         font.setPointSize(16)
@@ -27,6 +28,7 @@ class Ui_discount_check_dialog(object):
         self.btn_percent.setObjectName("btn_percent")
         self.verticalLayout.addWidget(self.btn_percent)
         self.btn_amount = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        self.btn_amount.setMinimumSize(QtCore.QSize(0, 100))
         font = QtGui.QFont()
         font.setFamily("Book Antiqua")
         font.setPointSize(16)
@@ -39,6 +41,6 @@ class Ui_discount_check_dialog(object):
 
     def retranslateUi(self, discount_check_dialog):
         _translate = QtCore.QCoreApplication.translate
-        discount_check_dialog.setWindowTitle(_translate("discount_check_dialog", "Discount Check"))
+        discount_check_dialog.setWindowTitle(_translate("discount_check_dialog", "Discount Type"))
         self.btn_percent.setText(_translate("discount_check_dialog", "Percent"))
         self.btn_amount.setText(_translate("discount_check_dialog", "Fixed Amount"))

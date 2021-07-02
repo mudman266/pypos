@@ -25,6 +25,12 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QPushButton" name="btn_percent">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>100</height>
+       </size>
+      </property>
       <property name="font">
        <font>
         <family>Book Antiqua</family>
@@ -38,6 +44,12 @@
     </item>
     <item>
      <widget class="QPushButton" name="btn_amount">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>100</height>
+       </size>
+      </property>
       <property name="font">
        <font>
         <family>Book Antiqua</family>

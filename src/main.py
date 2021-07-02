@@ -27,6 +27,9 @@ from enter_amount import Ui_payment_amount_dialog
 from employee_check import Ui_payroll_check_display
 from timecard import Ui_timecard_dialog
 from commission import Ui_commission_dialog
+from discount_selection import Ui_discount_check_dialog
+from discount_percent_entry import Ui_discount_percent_dialog
+from discount_amount_entry import Ui_discount_amount_dialog
 
 from PyQt6 import QtWidgets as qtw
 from PyQt6.QtCore import pyqtSignal
@@ -249,7 +252,7 @@ class makeSale(qtw.QMainWindow):
         self.ui.btn_tops.clicked.connect(self.pop_tops)
         self.ui.btn_bottoms.clicked.connect(self.pop_bottoms)
         self.ui.btn_ties.clicked.connect(self.pop_ties)
-        self.ui.btn_manager.clicked.connect(self.show_manager)
+        self.ui.btn_discount.clicked.connect(self.show_discount)
 
         # Create a new ticket in the sales database for the emp_id passed in
         dateTimeObj = datetime.now()
@@ -277,9 +280,9 @@ class makeSale(qtw.QMainWindow):
         # Todo: Make this dynamic. Add a spot in setup to choose which window to display.
         self.populate_grid("tops")
 
-    def show_manager(self):
-        self.manager_window = manager(self.emp_id)
-        self.manager_window.show()
+    def show_discount(self):
+        self.discount_window = DiscountSelection(self.emp_id)
+        self.discount_window.show()
 
     def pop_tops(self):
         self.populate_grid("tops")
@@ -422,6 +425,53 @@ class makeSale(qtw.QMainWindow):
     def manage_account(self):
         self.manage_account_window = manageAccount()
         self.manage_account_window.show()
+
+
+class DiscountSelection(qtw.QMainWindow):
+    def __init__(self, emp_id):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_discount_check_dialog()
+        self.ui.setupUi(self)
+
+        # Link the buttons
+        self.ui.btn_percent.clicked.connect(self.show_percent)
+        self.ui.btn_amount.clicked.connect(self.show_fixed)
+
+    def show_percent(self):
+        self.window = PercentDiscount()
+        self.window.show()
+        self.close()
+
+    def show_fixed(self):
+        self.window = FixedDiscount()
+        self.window.show()
+        self.close()
+
+
+class PercentDiscount(qtw.QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_discount_percent_dialog()
+        self.ui.setupUi(self)
+
+        # Link the buttons
+        self.ui.btn_cancel.clicked.connect(self.close)
+
+
+class FixedDiscount(qtw.QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_discount_amount_dialog()
+        self.ui.setupUi(self)
+
+        # Link the buttons
+        self.ui.btn_cancel.clicked.connect(self.close)
 
 
 class settle(qtw.QMainWindow):
