@@ -33,17 +33,19 @@ from PyQt6.QtCore import pyqtSignal
 import mysql.connector as mc
 from datetime import datetime
 import num2words as n2w
+import yaml
 
+credentials = yaml.load(open('./secrets.yml'))
 
 debugging = True
 
-db = mc.connect(
-                host="10.0.0.126",
-                user="sqluser",
-                password="essqueel",
-                charset="utf8mb4"
-            )
 cursor = db.cursor()
+db = mc.connect(
+                credentials['database']['host'],
+                credentials['database']['user'],
+                credentials['database']['password'],
+                credentials['database']['charset']
+            )
 
 # Set the current session number
 cursor.execute("SELECT ID FROM dbs1709505.sessions")
@@ -680,6 +682,7 @@ class search_customer_results(qtw.QDialog):
         self.ui.tableWidget_customers.setColumnCount(7)
         self.ui.tableWidget_customers.setHorizontalHeaderLabels(["ID", "First", "Last", "Phone", "Address", "City", "State",
                                                                  "Zip"])
+        self.ui.tableWidget_customers.setSizePolicy()
         # Hide the vertical header (row #)
         self.ui.tableWidget_customers.verticalHeader().setVisible(False)
 
@@ -694,14 +697,14 @@ class search_customer_results(qtw.QDialog):
         if debugging:
             print(f"Row count is now: {cursor.rowcount}")
         for row in recs:
-            self.ui.tableWidget_customers.setItem(i, 0, qtw.QTableWidgetItem(str(row[0])))
-            self.ui.tableWidget_customers.setItem(i, 1, qtw.QTableWidgetItem(row[1]))
-            self.ui.tableWidget_customers.setItem(i, 2, qtw.QTableWidgetItem(row[2]))
-            self.ui.tableWidget_customers.setItem(i, 3, qtw.QTableWidgetItem(row[3]))
-            self.ui.tableWidget_customers.setItem(i, 4, qtw.QTableWidgetItem(row[4]))
-            self.ui.tableWidget_customers.setItem(i, 5, qtw.QTableWidgetItem(row[5]))
-            self.ui.tableWidget_customers.setItem(i, 6, qtw.QTableWidgetItem(row[6]))
-            self.ui.tableWidget_customers.setItem(i, 7, qtw.QTableWidgetItem(row[7]))
+            self.ui.tableWidget_customers.setItem(i, 0, qtw.QTableWidgetItem(str(row[0])))  # ID
+            self.ui.tableWidget_customers.setItem(i, 1, qtw.QTableWidgetItem(row[1]))  # First Name
+            self.ui.tableWidget_customers.setItem(i, 2, qtw.QTableWidgetItem(row[2]))  # Last Name
+            self.ui.tableWidget_customers.setItem(i, 3, qtw.QTableWidgetItem(row[3]))  # Phone Number
+            self.ui.tableWidget_customers.setItem(i, 4, qtw.QTableWidgetItem(row[4]))  # Address
+            self.ui.tableWidget_customers.setItem(i, 5, qtw.QTableWidgetItem(row[5]))  # City
+            self.ui.tableWidget_customers.setItem(i, 6, qtw.QTableWidgetItem(row[6]))  # State
+            self.ui.tableWidget_customers.setItem(i, 7, qtw.QTableWidgetItem(row[7]))  # Zipcode
             i += 1
 
     def exit(self):
@@ -718,7 +721,7 @@ class search_customer_results(qtw.QDialog):
         True
         # TODO: Make it move
 
-        # TODO: Return customer record to the make sale screen
+        # TODO: Return selected customer record to the make sale screen
 
 
 class newCustomer(qtw.QDialog):
