@@ -105,9 +105,7 @@ class PasswordEntry(qtw.QDialog):
         self.ui.btn_9.clicked.connect(self.btn_9)
         self.ui.btn_0.clicked.connect(self.btn_0)
         self.ui.btn_backspace.clicked.connect(self.btn_backspace)
-
-    def exit(self):
-        self.close()
+        self.ui.btn_cancel.clicked.connect(self.close)
 
     def try_login(self):
         cursor.execute("SELECT ID, first_name FROM dbs1709505.employee WHERE passcode='{}'".format(self.password))
