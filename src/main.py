@@ -30,6 +30,7 @@ from commission import Ui_commission_dialog
 from discount_selection import Ui_discount_check_dialog
 from discount_percent_entry import Ui_discount_percent_dialog
 from discount_amount_entry import Ui_discount_amount_dialog
+from employee_setup import Ui_employee_setup
 
 from PyQt6 import QtWidgets as qtw
 from PyQt6.QtCore import pyqtSignal
@@ -986,6 +987,7 @@ class manager(qtw.QDialog):
         self.ui.btn_payroll.clicked.connect(self.payroll)
         self.ui.btn_manufacturin.clicked.connect(self.manufacturing)
         self.ui.btn_stock.clicked.connect(self.stock)
+        self.ui.btn_employees.clicked.connect(self.employees)
 
     def exit(self):
         self.close()
@@ -1011,6 +1013,41 @@ class manager(qtw.QDialog):
     def stock(self):
         self.window = stock()
         self.window.show()
+
+    def employees(self):
+        self.window = employee_setup()
+        self.window.show()
+
+
+class employee_setup(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        # Setup the UI
+        self.ui = Ui_employee_setup()
+        self.ui.setupUi(self)
+        self.ui.tbl_employees.setHorizontalHeaderLabels(["Name"])
+
+        # Add current employees to the list widget
+        cursor.execute("SELECT first_name, last_name FROM dbs1709505.employee")
+        for name in cursor.fetchall():
+            # Form the name
+            names = ""
+            if str(name[0]) != "None":
+                names += name[0] + " "
+            if str(name[1]) != "None":
+                names += name[1]
+
+            # Add name to a table item
+            item = qtw.QTableWidgetItem(names)
+
+            # Increase the row count
+            rows = self.ui.tbl_employees.rowCount()
+            self.ui.tbl_employees.setRowCount(rows + 1)
+
+            # Add the item to the table
+            self.ui.tbl_employees.setItem(rows, 0, item)
+
 
 class enter_deposit(qtw.QDialog):
     def __init__(self, emp_id):
