@@ -1026,17 +1026,19 @@ class employee_setup(qtw.QDialog):
         # Setup the UI
         self.ui = Ui_employee_setup()
         self.ui.setupUi(self)
-        self.ui.tbl_employees.setHorizontalHeaderLabels(["Name"])
+        self.ui.tbl_employees.setHorizontalHeaderLabels(["ID", "Name"])
+        self.ui.tbl_employees.verticalHeader().setVisible(False)
+        self.ui.tbl_employees.horizontalHeader().setSectionResizeMode(0, qtw.QHeaderView.ResizeMode.ResizeToContents)
 
         # Add current employees to the list widget
-        cursor.execute("SELECT first_name, last_name FROM dbs1709505.employee")
+        cursor.execute("SELECT id, first_name, last_name FROM dbs1709505.employee")
         for name in cursor.fetchall():
             # Form the name
             names = ""
-            if str(name[0]) != "None":
-                names += name[0] + " "
             if str(name[1]) != "None":
-                names += name[1]
+                names += name[1] + " "
+            if str(name[2]) != "None":
+                names += name[2]
 
             # Add name to a table item
             item = qtw.QTableWidgetItem(names)
@@ -1046,7 +1048,20 @@ class employee_setup(qtw.QDialog):
             self.ui.tbl_employees.setRowCount(rows + 1)
 
             # Add the item to the table
-            self.ui.tbl_employees.setItem(rows, 0, item)
+            self.ui.tbl_employees.setItem(rows, 0, qtw.QTableWidgetItem(str(name[0])))
+            self.ui.tbl_employees.setItem(rows, 1, item)
+
+        # Update editable info on name selection
+        self.ui.tbl_employees.cellClicked.connect(self.get_emp_info)
+
+    def get_emp_info(self, row, column):
+        employee_id = self.ui.tbl_employees.item(row, 0).text()
+        if debugging:
+            print(f"Coordinates clicked: Row: {row} Column: {column}")
+            print(f"Gathering info for employee id: {employee_id}")
+        cursor.execute(f"SELECT * FROM dbs1709505.employee WHERE id={employee_id}")
+        for employee in cursor.fetchall():
+            self.ui.txt_fname.setText(employee[1])
 
 
 class enter_deposit(qtw.QDialog):
