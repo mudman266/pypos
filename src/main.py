@@ -1034,7 +1034,7 @@ class employee_setup(qtw.QDialog):
 
         # Link buttons to methods
         # TODO - update record on ok button press
-        self.ui.btn_ok.clicked.connect(self.close)
+        self.ui.btn_ok.clicked.connect(self.update_emp)
         self.ui.btn_cancel.clicked.connect(self.close)
 
         # Add current employees to the list widget
@@ -1068,12 +1068,14 @@ class employee_setup(qtw.QDialog):
             print(f"Gathering info for employee id: {employee_id}")
         cursor.execute(f"SELECT * FROM dbs1709505.employee WHERE id={employee_id}")
         for employee in cursor.fetchall():
+            self.cur_emp = employee[0]
             self.ui.txt_fname.setText(employee[1])
             self.ui.txt_lname.setText(employee[2])
             self.ui.txt_disp_name.setText(employee[3])
             self.ui.txt_passcode.setText(str(employee[4]))
             self.ui.txt_pay_rate.setText(str(employee[6]))
-            self.ui.txt_social.setText(str(employee[8]))
+            social = "" if str(employee[8]) == "None" else str(employee[8])
+            self.ui.txt_social.setText(social)
             self.ui.txt_job_class.setText(str(employee[9]))
             if employee[7] == 1:
                 self.ui.chk_active.setChecked(True)
@@ -1083,6 +1085,24 @@ class employee_setup(qtw.QDialog):
                 self.ui.chk_salaried.setChecked(True)
             else:
                 self.ui.chk_salaried.setChecked(False)
+
+    def update_emp(self):
+        # Get a value for the checkboxes
+        is_active = 1 if self.ui.chk_active.isChecked() else 0
+        is_salaried = 1 if self.ui.chk_salaried.isChecked() else 0
+
+        # Build SQL statement
+        sql_statement = "UPDATE dbs1709505.employee SET first_name = %s, last_name = %s, display_name = %s, passcode = %s, " \
+                        "pay_rate = %s, ssn = %s, job_class_id = %s, active = %s, salaried = %s WHERE id = %s"
+
+        # Execute query
+        cursor.execute(sql_statement, (self.ui.txt_fname.text(), self.ui.txt_lname.text(), self.ui.txt_disp_name.text(),
+                       self.ui.txt_passcode.text(), self.ui.txt_pay_rate.text(), self.ui.txt_social.text(),
+                       self.ui.txt_job_class.text(), is_active, is_salaried, self.cur_emp))
+        db.commit()
+
+        # Close the emp edit screen
+        self.close()
 
 
 class enter_deposit(qtw.QDialog):
