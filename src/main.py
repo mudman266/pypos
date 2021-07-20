@@ -36,8 +36,10 @@ from PyQt6 import QtWidgets as qtw
 from PyQt6.QtCore import pyqtSignal
 import mysql.connector as mc
 from datetime import datetime
+import unittest
 import num2words as n2w
 from yaml import safe_load as load
+
 
 credentials = load(open('c:/school/capstone/pyofsale/src/sec/secrets.yml'))
 
@@ -1030,6 +1032,11 @@ class employee_setup(qtw.QDialog):
         self.ui.tbl_employees.verticalHeader().setVisible(False)
         self.ui.tbl_employees.horizontalHeader().setSectionResizeMode(0, qtw.QHeaderView.ResizeMode.ResizeToContents)
 
+        # Link buttons to methods
+        # TODO - update record on ok button press
+        self.ui.btn_ok.clicked.connect(self.close)
+        self.ui.btn_cancel.clicked.connect(self.close)
+
         # Add current employees to the list widget
         cursor.execute("SELECT id, first_name, last_name FROM dbs1709505.employee")
         for name in cursor.fetchall():
@@ -1062,6 +1069,20 @@ class employee_setup(qtw.QDialog):
         cursor.execute(f"SELECT * FROM dbs1709505.employee WHERE id={employee_id}")
         for employee in cursor.fetchall():
             self.ui.txt_fname.setText(employee[1])
+            self.ui.txt_lname.setText(employee[2])
+            self.ui.txt_disp_name.setText(employee[3])
+            self.ui.txt_passcode.setText(str(employee[4]))
+            self.ui.txt_pay_rate.setText(str(employee[6]))
+            self.ui.txt_social.setText(str(employee[8]))
+            self.ui.txt_job_class.setText(str(employee[9]))
+            if employee[7] == 1:
+                self.ui.chk_active.setChecked(True)
+            else:
+                self.ui.chk_active.setChecked(False)
+            if employee[5] == 1:
+                self.ui.chk_salaried.setChecked(True)
+            else:
+                self.ui.chk_salaried.setChecked(False)
 
 
 class enter_deposit(qtw.QDialog):
