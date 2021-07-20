@@ -37,6 +37,7 @@ from PyQt6.QtCore import pyqtSignal
 import mysql.connector as mc
 from datetime import datetime
 import unittest
+from functools import partial
 import num2words as n2w
 from yaml import safe_load as load
 
@@ -857,6 +858,7 @@ class manageAccount(qtw.QDialog):
 
     def make_payment(self):
         self.close()
+        # TODO - Create makePayment class
         self.make_payment_screen = makePayment()
         self.make_payment_screen.show()
 
@@ -869,59 +871,18 @@ class selectEmployee(qtw.QDialog):
         self.ui = Ui_time_clock_dialog()
         self.ui.setupUi(self)
 
-        # TODO: Make the employee list dynamic
-
-        # Link buttons to methods
-        self.ui.btn_emp_1.clicked.connect(self.btn_1)
-        self.ui.btn_emp_2.clicked.connect(self.btn_2)
-        self.ui.btn_emp_3.clicked.connect(self.btn_3)
-        self.ui.btn_emp_4.clicked.connect(self.btn_4)
-        self.ui.btn_emp_5.clicked.connect(self.btn_5)
-        self.ui.btn_emp_6.clicked.connect(self.btn_6)
-        self.ui.btn_emp_7.clicked.connect(self.btn_7)
-        self.ui.btn_emp_8.clicked.connect(self.btn_8)
-        self.ui.btn_emp_9.clicked.connect(self.btn_9)
-        self.ui.btn_emp_10.clicked.connect(self.btn_10)
-        self.ui.btn_emp_11.clicked.connect(self.btn_11)
-
-    def exit(self):
-        self.close()
-
-    def btn_1(self):
-        self.time_clock(1)
-
-    def btn_2(self):
-        self.time_clock(2)
-
-    def btn_3(self):
-        self.time_clock(3)
-
-    def btn_4(self):
-        self.time_clock(12)
-
-    def btn_5(self):
-        self.time_clock(5)
-
-    def btn_6(self):
-        self.time_clock(6)
-
-    def btn_7(self):
-        self.time_clock(7)
-
-    def btn_8(self):
-        self.time_clock(8)
-
-    def btn_9(self):
-        self.time_clock(9)
-
-    def btn_10(self):
-        self.time_clock(10)
-
-    def btn_11(self):
-        self.time_clock(11)
-
-    def btn_12(self):
-        self.time_clock(12)
+        cursor.execute("SELECT id, first_name FROM dbs1709505.employee WHERE active = 1")
+        self.ui.gridLayout.setColumnStretch(0, 0)
+        col = 0
+        row = 0
+        for empid, name in cursor:
+            if row >= 8:
+                row = 0
+                col += 1
+            emp_button = qtw.QPushButton(name)
+            emp_button.clicked.connect(partial(self.time_clock, empid))
+            self.ui.gridLayout.addWidget(emp_button, row, col)
+            row += 1
 
     def time_clock(self, emp_id):
         # is the employee already clocked in?
@@ -1102,7 +1063,7 @@ class employee_setup(qtw.QDialog):
                        self.ui.txt_job_class.text(), is_active, is_salaried, self.cur_emp))
         db.commit()
 
-        # Close the emp edit screen
+        # Close the employee edit screen
         self.close()
 
 
