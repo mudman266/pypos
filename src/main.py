@@ -1092,8 +1092,9 @@ class employee_setup(qtw.QDialog):
         is_salaried = 1 if self.ui.chk_salaried.isChecked() else 0
 
         # Build SQL statement
-        sql_statement = "UPDATE dbs1709505.employee SET first_name = %s, last_name = %s, display_name = %s, passcode = %s, " \
-                        "pay_rate = %s, ssn = %s, job_class_id = %s, active = %s, salaried = %s WHERE id = %s"
+        sql_statement = "UPDATE dbs1709505.employee SET first_name = %s, last_name = %s, display_name = %s, " \
+                        "passcode = %s, pay_rate = %s, ssn = %s, job_class_id = %s, active = %s, salaried = %s " \
+                        "WHERE id = %s"
 
         # Execute query
         cursor.execute(sql_statement, (self.ui.txt_fname.text(), self.ui.txt_lname.text(), self.ui.txt_disp_name.text(),
