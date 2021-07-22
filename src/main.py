@@ -953,6 +953,7 @@ class manager(qtw.QDialog):
         self.ui.btn_stock.clicked.connect(self.stock)
         self.ui.btn_employees.clicked.connect(self.employees)
         self.ui.btn_begin_day.clicked.connect(self.begin_day)
+        self.ui.btn_eod.clicked.connect(self.eod)
 
     def exit(self):
         self.close()
@@ -1031,7 +1032,44 @@ class manager(qtw.QDialog):
                     info_window.setLayout(info_window.layout)
                     info_window.exec()
 
+    def eod(self):
+        # Build a window to show the user info
+        info_window = qtw.QDialog(self)
+        btn_ok = qtw.QDialogButtonBox.StandardButtons.Ok
+        info_window.buttonBox = qtw.QDialogButtonBox(btn_ok)
+        info_window.buttonBox.accepted.connect(info_window.close)
+        info_window.layout = qtw.QVBoxLayout()
+        info_window.layout.addWidget(info_window.buttonBox)
+        info_window.setLayout(info_window.layout)
+        info_window.setWindowTitle("End of Day")
 
+        # Check for an open session
+        if debugging:
+            print("Checking for an open session to close.")
+        cursor.execute("SELECT * FROM dbs1709505.sessions WHERE id=(SELECT MAX(id) FROM dbs1709505.sessions)")
+        for ses in cursor:
+            if ses[2] is not None:
+                # Session is closed
+                if debugging:
+                    print(f"Session {ses[0]} is already closed. Use begin day to start a new one.")
+                msg = qtw.QLabel(f"Session {ses[0]} is already closed. Use 'Begin Day' to start a new one.")
+                info_window.layout.addWidget(msg)
+                info_window.setLayout(info_window.layout)
+                info_window.exec()
+            else:
+                # Close the session
+                if debugging:
+                    print(f"Closing session {ses[0]}.")
+                cur_date = datetime.now()
+                close_time = cur_date.strftime("%Y-%m-%d %H:%M:%S")
+                cursor.execute(f"UPDATE dbs1709505.sessions SET close_time = {close_time!r} WHERE id = {ses[0]}")
+                db.commit()
+                msg = qtw.QLabel(f"Session {ses[0]} closed.")
+                info_window.layout.addWidget(msg)
+                info_window.setLayout(info_window.layout)
+                info_window.exec()
+                if debugging:
+                    print("Done.")
 
 
 class employee_setup(qtw.QDialog):
