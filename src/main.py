@@ -1009,7 +1009,7 @@ class manager(qtw.QDialog):
                 # Open session already found. Abort and alert the user.
                 if debugging:
                     print(f"Open session found: {ses[0]}...Aborting Begin sequence.")
-                msg = qtw.QLabel("Error: Session is still open. Run end of day to close.")
+                msg = qtw.QLabel(f"Error: Session {ses[0]} is still open. Run end of day to close.")
                 info_window.layout.addWidget(msg)
                 info_window.setLayout(info_window.layout)
                 info_window.exec()
@@ -1020,7 +1020,7 @@ class manager(qtw.QDialog):
                 cur_date = datetime.now()
                 open = cur_date.strftime("%Y-%m-%d %H:%M:%S")
                 cursor.execute(f"INSERT INTO dbs1709505.sessions (open_time) VALUES ({open!r})")
-
+                db.commit()
                 # Inform the user the session is now open
                 cursor.execute("SELECT * FROM dbs1709505.sessions WHERE id=(SELECT MAX(id) FROM dbs1709505.sessions)")
                 for sess in cursor:
