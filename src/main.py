@@ -871,6 +871,7 @@ class selectEmployee(qtw.QDialog):
         self.ui = Ui_time_clock_dialog()
         self.ui.setupUi(self)
 
+        # Dynamically create the employee list
         cursor.execute("SELECT id, first_name FROM dbs1709505.employee WHERE active = 1")
         self.ui.gridLayout.setColumnStretch(0, 0)
         col = 0
@@ -951,11 +952,17 @@ class manager(qtw.QDialog):
         self.ui.btn_manufacturin.clicked.connect(self.manufacturing)
         self.ui.btn_stock.clicked.connect(self.stock)
         self.ui.btn_employees.clicked.connect(self.employees)
+        self.ui.btn_begin_day.clicked.connect(self.begin_day)
 
     def exit(self):
         self.close()
 
     def deposit(self):
+        # Is the session open
+        if debugging:
+            print("Checking for an open session...")
+        cursor.execute("SELECT * FROM dbs1709505.sessions WHERE id=(SELECT MAX(id) FROM dbs1709505.sessions)")
+
         self.close()
         self.window = enter_deposit(self.manager_id)
         self.window.show()
@@ -981,6 +988,51 @@ class manager(qtw.QDialog):
         self.window = employee_setup()
         self.window.show()
 
+    def begin_day(self):
+        # Build the window to show info to the user
+        info_window = qtw.QDialog(self)
+        btn_ok = qtw.QDialogButtonBox.StandardButtons.Ok
+        info_window.buttonBox = qtw.QDialogButtonBox(btn_ok)
+        info_window.buttonBox.accepted.connect(info_window.close)
+        info_window.layout = qtw.QVBoxLayout()
+        info_window.layout.addWidget(info_window.buttonBox)
+        info_window.setLayout(info_window.layout)
+        info_window.setWindowTitle("Begin Day")
+
+        # Is a session already open
+        if debugging:
+            print("Beginning Day....")
+            print("Checking for an open session...")
+        cursor.execute("SELECT * FROM dbs1709505.sessions WHERE id=(SELECT MAX(id) FROM dbs1709505.sessions)")
+        for ses in cursor:
+            if ses[2] is None:
+                # Open session already found. Abort and alert the user.
+                if debugging:
+                    print(f"Open session found: {ses[0]}...Aborting Begin sequence.")
+                msg = qtw.QLabel("Error: Session is still open. Run end of day to close.")
+                info_window.layout.addWidget(msg)
+                info_window.setLayout(info_window.layout)
+                info_window.exec()
+            else:
+                # Open a new session
+                if debugging:
+                    print("Opening a new session...")
+                cur_date = datetime.now()
+                open = cur_date.strftime("%Y-%m-%d %H:%M:%S")
+                cursor.execute(f"INSERT INTO dbs1709505.sessions (open_time) VALUES ({open!r})")
+
+                # Inform the user the session is now open
+                cursor.execute("SELECT * FROM dbs1709505.sessions WHERE id=(SELECT MAX(id) FROM dbs1709505.sessions)")
+                for sess in cursor:
+                    if debugging:
+                        print(f"Done. Session {sess[0]} is now open.")
+                    msg = qtw.QLabel(f"Completed. Session {sess[0]} is now open.")
+                    info_window.layout.addWidget(msg)
+                    info_window.setLayout(info_window.layout)
+                    info_window.exec()
+
+
+
 
 class employee_setup(qtw.QDialog):
     def __init__(self):
@@ -994,7 +1046,6 @@ class employee_setup(qtw.QDialog):
         self.ui.tbl_employees.horizontalHeader().setSectionResizeMode(0, qtw.QHeaderView.ResizeMode.ResizeToContents)
 
         # Link buttons to methods
-        # TODO - update record on ok button press
         self.ui.btn_ok.clicked.connect(self.update_emp)
         self.ui.btn_cancel.clicked.connect(self.close)
 
@@ -1158,6 +1209,8 @@ class enter_deposit(qtw.QDialog):
             self.cash = self.paid_amt
             if debugging:
                 print(f"Got cash input of: {self.cash}")
+
+            # Update UI to gather checks amount
             self.ui.label.setText("Enter Checks:")
             self.ui.lbl_amt.setText("0.00")
             self.paid_amt = 0
