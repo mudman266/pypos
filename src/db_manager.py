@@ -9,7 +9,7 @@ class DB:
     def __init__(self):
         try:
             mydb = mc.connect(
-                host="10.0.0.126",
+                host="10.0.0.11",
                 user="sqluser",
                 password="essqueel",
                 charset="utf8mb4"
