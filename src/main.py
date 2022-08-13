@@ -219,8 +219,9 @@ class Begin(qtw.QMainWindow):
 
     def show_void(self):
         # TODO - make and link the void window
-        self.window = None
-        self.window.show()
+        # self.window = None
+        # self.window.show()
+        print(f'**** Void Functionality Not Implemented ****')
         self.close()
 
     def show_manager(self):
@@ -230,8 +231,9 @@ class Begin(qtw.QMainWindow):
 
     def show_cash_tray_options(self):
         # TODO - make and link the cash tray options window
-        self.window = None
-        self.window.show()
+        # self.window = None
+        # self.window.show()
+        print(f'**** Cash Tray Options Not Implemented ****')
         self.close()
 
 
@@ -857,10 +859,11 @@ class manageAccount(qtw.QDialog):
         self.close()
 
     def make_payment(self):
-        self.close()
         # TODO - Create makePayment class
-        self.make_payment_screen = makePayment()
-        self.make_payment_screen.show()
+        # self.make_payment_screen = makePayment()
+        # self.make_payment_screen.show()
+        print(f'**** Make Payment Functionality Not Implemented ****')
+        self.close()
 
 
 class selectEmployee(qtw.QDialog):

@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'edit_employee.ui'
+# Form implementation generated from reading ui file 'vendor_order.ui'
 #
 # Created by: PyQt6 UI code generator 6.1.0
 #
@@ -9,43 +9,27 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_edit_employee_dialog(object):
-    def setupUi(self, edit_employee_dialog):
-        edit_employee_dialog.setObjectName("edit_employee_dialog")
-        edit_employee_dialog.resize(750, 571)
+class Ui_new_vendor_order_dialog(object):
+    def setupUi(self, new_vendor_order_dialog):
+        new_vendor_order_dialog.setObjectName("new_vendor_order_dialog")
+        new_vendor_order_dialog.resize(400, 300)
         font = QtGui.QFont()
         font.setFamily("Book Antiqua")
         font.setPointSize(20)
-        edit_employee_dialog.setFont(font)
-        self.lbl_edit_employee = QtWidgets.QLabel(edit_employee_dialog)
-        self.lbl_edit_employee.setGeometry(QtCore.QRect(200, 0, 301, 41))
-        self.lbl_edit_employee.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.lbl_edit_employee.setObjectName("lbl_edit_employee")
-        self.tableView = QtWidgets.QTableView(edit_employee_dialog)
-        self.tableView.setGeometry(QtCore.QRect(5, 51, 731, 391))
+        new_vendor_order_dialog.setFont(font)
+        self.label = QtWidgets.QLabel(new_vendor_order_dialog)
+        self.label.setGeometry(QtCore.QRect(0, 0, 391, 41))
+        self.label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.label.setObjectName("label")
+        self.tableView = QtWidgets.QTableView(new_vendor_order_dialog)
+        self.tableView.setGeometry(QtCore.QRect(10, 40, 381, 131))
         self.tableView.setObjectName("tableView")
-        self.horizontalLayoutWidget = QtWidgets.QWidget(edit_employee_dialog)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(9, 459, 721, 102))
+        self.horizontalLayoutWidget = QtWidgets.QWidget(new_vendor_order_dialog)
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(10, 180, 381, 102))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.btn_add = QtWidgets.QPushButton(self.horizontalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(20)
-        sizePolicy.setHeightForWidth(self.btn_add.sizePolicy().hasHeightForWidth())
-        self.btn_add.setSizePolicy(sizePolicy)
-        self.btn_add.setMinimumSize(QtCore.QSize(100, 100))
-        self.btn_add.setMaximumSize(QtCore.QSize(100, 100))
-        self.btn_add.setBaseSize(QtCore.QSize(12, 2))
-        font = QtGui.QFont()
-        font.setFamily("Bookman Old Style")
-        font.setPointSize(22)
-        font.setStyleStrategy(QtGui.QFont.StyleStrategy.PreferAntialias)
-        self.btn_add.setFont(font)
-        self.btn_add.setObjectName("btn_add")
-        self.horizontalLayout.addWidget(self.btn_add)
         self.btn_edit = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -57,7 +41,7 @@ class Ui_edit_employee_dialog(object):
         self.btn_edit.setBaseSize(QtCore.QSize(12, 2))
         font = QtGui.QFont()
         font.setFamily("Bookman Old Style")
-        font.setPointSize(22)
+        font.setPointSize(20)
         font.setStyleStrategy(QtGui.QFont.StyleStrategy.PreferAntialias)
         self.btn_edit.setFont(font)
         self.btn_edit.setObjectName("btn_edit")
@@ -79,13 +63,12 @@ class Ui_edit_employee_dialog(object):
         self.btn_cancel.setObjectName("btn_cancel")
         self.horizontalLayout.addWidget(self.btn_cancel)
 
-        self.retranslateUi(edit_employee_dialog)
-        QtCore.QMetaObject.connectSlotsByName(edit_employee_dialog)
+        self.retranslateUi(new_vendor_order_dialog)
+        QtCore.QMetaObject.connectSlotsByName(new_vendor_order_dialog)
 
-    def retranslateUi(self, edit_employee_dialog):
+    def retranslateUi(self, new_vendor_order_dialog):
         _translate = QtCore.QCoreApplication.translate
-        edit_employee_dialog.setWindowTitle(_translate("edit_employee_dialog", "Add/Edit Employee"))
-        self.lbl_edit_employee.setText(_translate("edit_employee_dialog", "Edit Employee"))
-        self.btn_add.setText(_translate("edit_employee_dialog", "Add"))
-        self.btn_edit.setText(_translate("edit_employee_dialog", "Edit"))
-        self.btn_cancel.setText(_translate("edit_employee_dialog", "Cancel"))
+        new_vendor_order_dialog.setWindowTitle(_translate("new_vendor_order_dialog", "Vendor Order"))
+        self.label.setText(_translate("new_vendor_order_dialog", "Vendor Order"))
+        self.btn_edit.setText(_translate("new_vendor_order_dialog", "Edit"))
+        self.btn_cancel.setText(_translate("new_vendor_order_dialog", "Cancel"))

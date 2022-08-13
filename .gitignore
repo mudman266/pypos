@@ -11,3 +11,4 @@
 /src/sqldrivers/top_level.txt
 /src/sqldrivers/WHEEL
 /src/sec/secrets.yml
+*/__pycache__
