@@ -31,6 +31,8 @@ from discount_selection import Ui_discount_check_dialog
 from discount_percent_entry import Ui_discount_percent_dialog
 from discount_amount_entry import Ui_discount_amount_dialog
 from employee_setup import Ui_employee_setup
+from clock_in_successful import Ui_ClockInSuccessful
+from clock_out_successful import Ui_ClockOutSuccessful
 
 from PyQt6 import QtWidgets as qtw
 from PyQt6.QtCore import pyqtSignal
@@ -40,6 +42,7 @@ import unittest
 from functools import partial
 import num2words as n2w
 from yaml import safe_load as load
+import time
 
 
 credentials = load(open('c:/school/capstone/pyofsale/src/sec/secrets.yml'))
@@ -53,6 +56,7 @@ db = mc.connect(
                 charset=credentials['database']['charset']
             )
 cursor = db.cursor()
+
 
 # Set the current session number
 cursor.execute("SELECT ID FROM dbs1709505.sessions")
@@ -901,17 +905,14 @@ class selectEmployee(qtw.QDialog):
             logins.append([login_id, time_in, time_out])
         if debugging:
             print(f"Retrieved logins: {logins}")
-        # If zero logins were returned, use the clock in function
-        if len(logins) < 1:
-            self.login(emp_id)
 
-        # If a time_in exists with no time_out, use the logout function with the record id
-        for sets in logins:
-            if sets[1] is not None:
-                if sets[2] is None:
-                    self.logout(sets[0])
-        if len(logins) > 0:
-            if logins[len(logins) - 1][2] is not None:
+        # Login or logout
+        if len(logins) == 0:
+            self.login(emp_id)
+        else:
+            if logins[len(logins) - 1][2] is None:
+                self.logout(logins[len(logins) - 1][0])
+            else:
                 self.login(emp_id)
 
     def login(self, emp_id):
@@ -924,6 +925,8 @@ class selectEmployee(qtw.QDialog):
         self.close()
         if debugging:
             print("Logged in.")
+        self.window = clock_in_success()
+        self.window.show()
 
     def logout(self, login_record_id):
         if debugging:
@@ -932,9 +935,27 @@ class selectEmployee(qtw.QDialog):
         timestampStr = cur_date.strftime("%Y-%m-%d %H:%M:%S")
         cursor.execute(f"UPDATE dbs1709505.labor SET time_out = {timestampStr!r} WHERE id = {login_record_id}")
         db.commit()
+        self.close()
         if debugging:
             print("Logged out.")
-            self.close()
+        self.window = clock_out_success()
+        self.window.show()
+
+
+class clock_in_success(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        self.ui = Ui_ClockInSuccessful()
+        self.ui.setupUi(self)
+
+
+class clock_out_success(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        self.ui = Ui_ClockOutSuccessful()
+        self.ui.setupUi(self)
 
 
 class manager(qtw.QDialog):
@@ -1089,6 +1110,21 @@ class employee_setup(qtw.QDialog):
         # Link buttons to methods
         self.ui.btn_ok.clicked.connect(self.update_emp)
         self.ui.btn_cancel.clicked.connect(self.close)
+        self.ui.btn_new.clicked.connect(self.new_emp)
+
+        self.update_emp_list()
+        self.get_emp_info(0, 0)
+
+    def new_emp(self):
+        cursor.execute(f"INSERT INTO dbs1709505.employee (first_name) VALUES ('New Employee')")
+        db.commit()
+        self.update_emp_list()
+        self.get_emp_info(0, 0)
+
+    def update_emp_list(self):
+        # Clear the list
+        self.ui.tbl_employees.clear()
+        self.ui.tbl_employees.setRowCount(0)
 
         # Add current employees to the list widget
         cursor.execute("SELECT id, first_name, last_name FROM dbs1709505.employee")
@@ -1113,6 +1149,7 @@ class employee_setup(qtw.QDialog):
 
         # Update editable info on name selection
         self.ui.tbl_employees.cellClicked.connect(self.get_emp_info)
+
 
     def get_emp_info(self, row, column):
         employee_id = self.ui.tbl_employees.item(row, 0).text()

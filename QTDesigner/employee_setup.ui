@@ -332,7 +332,7 @@
   <widget class="QPushButton" name="btn_cancel">
    <property name="geometry">
     <rect>
-     <x>530</x>
+     <x>620</x>
      <y>610</y>
      <width>100</width>
      <height>100</height>
@@ -376,7 +376,7 @@
   <widget class="QPushButton" name="btn_ok">
    <property name="geometry">
     <rect>
-     <x>310</x>
+     <x>440</x>
      <y>610</y>
      <width>100</width>
      <height>100</height>
@@ -415,6 +415,25 @@
    </property>
    <property name="text">
     <string>OK</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btn_new">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>610</y>
+     <width>101</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Bookman Old Style</family>
+     <pointsize>22</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>New</string>
    </property>
   </widget>
  </widget>
