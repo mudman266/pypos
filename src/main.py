@@ -1089,6 +1089,21 @@ class employee_setup(qtw.QDialog):
         # Link buttons to methods
         self.ui.btn_ok.clicked.connect(self.update_emp)
         self.ui.btn_cancel.clicked.connect(self.close)
+        self.ui.btn_new.clicked.connect(self.new_emp)
+
+        self.update_emp_list()
+        self.get_emp_info(0, 0)
+
+    def new_emp(self):
+        cursor.execute(f"INSERT INTO dbs1709505.employee (first_name) VALUES ('New Employee')")
+        db.commit()
+        self.update_emp_list()
+        self.get_emp_info(0, 0)
+
+    def update_emp_list(self):
+        # Clear the list
+        self.ui.tbl_employees.clear()
+        self.ui.tbl_employees.setRowCount(0)
 
         # Add current employees to the list widget
         cursor.execute("SELECT id, first_name, last_name FROM dbs1709505.employee")
@@ -1113,6 +1128,7 @@ class employee_setup(qtw.QDialog):
 
         # Update editable info on name selection
         self.ui.tbl_employees.cellClicked.connect(self.get_emp_info)
+
 
     def get_emp_info(self, row, column):
         employee_id = self.ui.tbl_employees.item(row, 0).text()
