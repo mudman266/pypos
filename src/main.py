@@ -1150,7 +1150,6 @@ class employee_setup(qtw.QDialog):
         # Update editable info on name selection
         self.ui.tbl_employees.cellClicked.connect(self.get_emp_info)
 
-
     def get_emp_info(self, row, column):
         employee_id = self.ui.tbl_employees.item(row, 0).text()
         if debugging:
@@ -1166,7 +1165,11 @@ class employee_setup(qtw.QDialog):
             self.ui.txt_pay_rate.setText(str(employee[6]))
             social = "" if str(employee[8]) == "None" else str(employee[8])
             self.ui.txt_social.setText(social)
-            self.ui.txt_job_class.setText(str(employee[9]))
+            self.ui.job_class_combo_box.clear()
+            # Build the job class list
+            self.ui.job_class_combo_box.addItems(self.get_job_classes())
+            if employee[9] is not None:
+                self.ui.job_class_combo_box.setCurrentIndex(employee[9] - 1)
             if employee[7] == 1:
                 self.ui.chk_active.setChecked(True)
             else:
@@ -1175,6 +1178,24 @@ class employee_setup(qtw.QDialog):
                 self.ui.chk_salaried.setChecked(True)
             else:
                 self.ui.chk_salaried.setChecked(False)
+
+    @staticmethod
+    def get_job_class_name(job_class_id):
+        sql_statement = "SELECT id, name FROM dbs1709505.job_class ORDER BY id ASC"
+        cursor.execute(sql_statement)
+        job_classes = []
+        for job_class in cursor:
+            if job_class[0] == job_class_id:
+                return job_class[1]
+
+    @staticmethod
+    def get_job_classes():
+        job_classes = []
+        sql_statement = "SELECT name FROM dbs1709505.job_class ORDER BY id ASC"
+        cursor.execute(sql_statement)
+        for job_class in cursor:
+            job_classes.append(job_class[0])
+        return job_classes
 
     def update_emp(self):
         # Get a value for the checkboxes
@@ -1189,7 +1210,7 @@ class employee_setup(qtw.QDialog):
         # Execute query
         cursor.execute(sql_statement, (self.ui.txt_fname.text(), self.ui.txt_lname.text(), self.ui.txt_disp_name.text(),
                        self.ui.txt_passcode.text(), self.ui.txt_pay_rate.text(), self.ui.txt_social.text(),
-                       self.ui.txt_job_class.text(), is_active, is_salaried, self.cur_emp))
+                       self.ui.job_class_combo_box.currentIndex() + 1, is_active, is_salaried, self.cur_emp))
         db.commit()
 
         # Close the employee edit screen
