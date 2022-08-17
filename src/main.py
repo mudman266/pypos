@@ -57,9 +57,10 @@ db = mc.connect(
             )
 cursor = db.cursor()
 
+db_name = "dbs1709505"
 
 # Set the current session number
-cursor.execute("SELECT ID FROM dbs1709505.sessions")
+cursor.execute(f"SELECT ID FROM {db_name}.sessions")
 session = cursor.fetchall()
 for ses in session:
     cur_session = ses
@@ -119,7 +120,7 @@ class PasswordEntry(qtw.QDialog):
         self.ui.btn_cancel.clicked.connect(self.close)
 
     def try_login(self):
-        cursor.execute("SELECT ID, first_name FROM dbs1709505.employee WHERE passcode='{}'".format(self.password))
+        cursor.execute("SELECT ID, first_name FROM {}.employee WHERE passcode='{}'".format(db_name, self.password))
         r = cursor.fetchall()
         # Debugging - print the password entered and the employee ID it links to.
         if debugging:
@@ -271,7 +272,7 @@ class makeSale(qtw.QMainWindow):
             print("Datetime: {}".format(timestampStr))
             print("Attempting to create new sale....")
 
-        cursor.execute(f"INSERT INTO dbs1709505.sales (sessions_id, employee_id, sales_date, sales_tax, subtotal)\
+        cursor.execute(f"INSERT INTO {db_name}.sales (sessions_id, employee_id, sales_date, sales_tax, subtotal)\
          VALUES ({cur_session[0]}, {int(emp_id)}, {timestampStr!r}, 0.0, 0.0)")
         if debugging:
             print("Cursor executed. Committing....")
@@ -281,7 +282,7 @@ class makeSale(qtw.QMainWindow):
             print("New sale created. Huzzah!")
 
         # Get the sale ID so items can be added to sales_detail
-        cursor.execute(f"SELECT ID FROM dbs1709505.sales WHERE sales_date = {timestampStr!r}")
+        cursor.execute(f"SELECT ID FROM {db_name}.sales WHERE sales_date = {timestampStr!r}")
         self.sale_id = cursor.fetchall()
         if debugging:
             print(f"Gathered sale id: {self.sale_id[0][0]}")
@@ -309,7 +310,7 @@ class makeSale(qtw.QMainWindow):
             # tops are groups 1,4,5,6, and 8
             if debugging:
                 print("Asked for tops. Gathering tops...")
-            cursor.execute(f"SELECT ID, name, price FROM dbs1709505.stock WHERE stock_group=1 or stock_group=4 or \
+            cursor.execute(f"SELECT ID, name, price FROM {db_name}.stock WHERE stock_group=1 or stock_group=4 or \
                 stock_group=5 or stock_group=6 or stock_group=8")
             self.items = []
             for item in cursor:
@@ -322,7 +323,7 @@ class makeSale(qtw.QMainWindow):
             # bottoms are groups 2
             if debugging:
                 print("Asked for bottoms. Gathering bottoms...")
-            cursor.execute(f"SELECT ID, name, price FROM dbs1709505.stock WHERE stock_group=2")
+            cursor.execute(f"SELECT ID, name, price FROM {db_name}.stock WHERE stock_group=2")
             self.items = []
             for item in cursor:
                 if debugging:
@@ -334,7 +335,7 @@ class makeSale(qtw.QMainWindow):
             # remaining groups for display are ties and hats - 10 and 3 respectively
             if debugging:
                 print("Asked for ties. Gathering ties...")
-            cursor.execute(f"SELECT ID, name, price FROM dbs1709505.stock WHERE stock_group=3 or stock_group=10")
+            cursor.execute(f"SELECT ID, name, price FROM {db_name}.stock WHERE stock_group=3 or stock_group=10")
             self.items = []
             for item in cursor:
                 if debugging:
@@ -380,7 +381,7 @@ class makeSale(qtw.QMainWindow):
         # Adds a selected item to the chit
         if debugging:
             print(f"Adding Item id: {args[0]} to Sale id: {args[1][0][0]}")
-        cursor.execute(f"INSERT INTO dbs1709505.sales_detail (sales_id, stock_id, qty, needs_mfg) VALUES \
+        cursor.execute(f"INSERT INTO {db_name}.sales_detail (sales_id, stock_id, qty, needs_mfg) VALUES \
             ({args[1][0][0]}, {args[0]}, 1, 0)")
         db.commit()
         if debugging:
@@ -393,7 +394,7 @@ class makeSale(qtw.QMainWindow):
             print(f"Row count is: {row_count}")
         self.ui.tableWidget_chit.setRowCount(row_count + 1)
         # Populate the row with the added item
-        cursor.execute(f"SELECT name, price FROM dbs1709505.stock WHERE id = {args[0]}")
+        cursor.execute(f"SELECT name, price FROM {db_name}.stock WHERE id = {args[0]}")
         for item in cursor:
             item_name = item[0]
             item_price = item[1]
@@ -497,7 +498,7 @@ class settle(qtw.QMainWindow):
             self.paid_amt = 0.0
 
         # Update the sale database with the tax and subtotal
-        cursor.execute(f"UPDATE dbs1709505.sales SET sales_tax = {tax}, subtotal = {subtotal} WHERE id = \
+        cursor.execute(f"UPDATE {db_name}.sales SET sales_tax = {tax}, subtotal = {subtotal} WHERE id = \
             {sales_id[0][0]}")
         db.commit()
 
@@ -614,7 +615,7 @@ class settle(qtw.QMainWindow):
 
         # Update the DB with the payment type
         cursor.execute(
-            f"UPDATE dbs1709505.sales SET payment_types_id = {self.payment_type} WHERE id = {self.sales_id[0][0]}")
+            f"UPDATE {db_name}.sales SET payment_types_id = {self.payment_type} WHERE id = {self.sales_id[0][0]}")
         db.commit()
         if debugging:
             print("Updated sales DB with payment type.")
@@ -643,7 +644,7 @@ class receipt(qtw.QDialog):
 
         # Get all items from the sale
         sold_items = []
-        cursor.execute(f"SELECT stock_id FROM dbs1709505.sales_detail WHERE sales_id = {self.sale_id}")
+        cursor.execute(f"SELECT stock_id FROM {db_name}.sales_detail WHERE sales_id = {self.sale_id}")
         # Add every sold item's id to an array
         for item in cursor:
             sold_items.append(item[0])
@@ -652,7 +653,7 @@ class receipt(qtw.QDialog):
 
         # For every sold item id in the array, get the name and price and insert into the table
         for items in sold_items:
-            cursor.execute(f"SELECT name, price FROM dbs1709505.stock WHERE id = {items}")
+            cursor.execute(f"SELECT name, price FROM {db_name}.stock WHERE id = {items}")
             for name, price in cursor:
                 cur_rows = self.ui.items_table.rowCount()
                 self.ui.items_table.setRowCount(cur_rows + 1)
@@ -660,7 +661,7 @@ class receipt(qtw.QDialog):
                 self.ui.items_table.setItem(cur_rows, 1, qtw.QTableWidgetItem(str(price)))
 
         # Update the subtotal, tax, and total
-        cursor.execute(f"SELECT subtotal, sales_tax FROM dbs1709505.sales WHERE id = {self.sale_id}")
+        cursor.execute(f"SELECT subtotal, sales_tax FROM {db_name}.sales WHERE id = {self.sale_id}")
         for subtotal, tax in cursor:
             self.ui.lbl_subtotal_amt.setText(str(subtotal))
             self.ui.lbl_tax_amt.setText(str(tax))
@@ -698,7 +699,7 @@ class customerLookup(qtw.QDialog):
         if self.ui.line_lname.text().strip():
             if debugging:
                 print(f"Last name detected: {self.ui.line_lname.text()}. Searching...")
-            cursor.execute(f"SELECT * FROM dbs1709505.customer WHERE last_name LIKE '%{self.ui.line_lname.text()}%'")
+            cursor.execute(f"SELECT * FROM {db_name}.customer WHERE last_name LIKE '%{self.ui.line_lname.text()}%'")
             # Check for 0 results
 
         # Check first name
@@ -709,7 +710,7 @@ class customerLookup(qtw.QDialog):
                 if debugging:
                     print(f"First name detected: {self.ui.line_lname.text()}. Searching...")
                 cursor.execute(
-                    f"SELECT * FROM dbs1709505.customer WHERE first_name LIKE '%{self.ui.line_fname.text()}%'")
+                    f"SELECT * FROM {db_name}.customer WHERE first_name LIKE '%{self.ui.line_fname.text()}%'")
 
         # Check phone number
         elif self.ui.line_phone.text().strip():
@@ -719,7 +720,7 @@ class customerLookup(qtw.QDialog):
                 if debugging:
                     print(f"Phone number detected: {self.ui.line_phone.text()}. Searching...")
                 cursor.execute(
-                    f"SELECT * FROM dbs1709505.customer WHERE phone LIKE '%{self.ui.line_phone.text()}%'")
+                    f"SELECT * FROM {db_name}.customer WHERE phone LIKE '%{self.ui.line_phone.text()}%'")
 
         # Check address
         elif self.ui.line_address.text().strip():
@@ -729,7 +730,7 @@ class customerLookup(qtw.QDialog):
                 if debugging:
                     print(f"Address detected: {self.ui.line_address.text()}. Searching...")
                 cursor.execute(
-                    f"SELECT * FROM dbs1709505.customer WHERE address LIKE '%{self.ui.line_address.text()}%'")
+                    f"SELECT * FROM {db_name}.customer WHERE address LIKE '%{self.ui.line_address.text()}%'")
                 # Check for 0 results
                 records = cursor.fetchall()
                 if debugging:
@@ -835,7 +836,7 @@ class newCustomer(qtw.QDialog):
             gender = 'F'
         else:
             gender = 'M'
-        cursor.execute(f"INSERT INTO dbs1709505.customer (first_name, last_name, address, city, state, zip, gender)\
+        cursor.execute(f"INSERT INTO {db_name}.customer (first_name, last_name, address, city, state, zip, gender)\
             VALUES ('{self.ui.line_fname.text()}', '{self.ui.line_lname.text()}', '{self.ui.line_street.text()}',\
             '{self.ui.line_city.text()}', '{self.ui.line_state.text()}', {self.ui.line_zip.text()}, '{gender}')")
         db.commit()
@@ -879,7 +880,7 @@ class selectEmployee(qtw.QDialog):
         self.ui.setupUi(self)
 
         # Dynamically create the employee list
-        cursor.execute("SELECT id, first_name FROM dbs1709505.employee WHERE active = 1")
+        cursor.execute(f"SELECT id, first_name FROM {db_name}.employee WHERE active = 1")
         self.ui.gridLayout.setColumnStretch(0, 0)
         col = 0
         row = 0
@@ -899,7 +900,7 @@ class selectEmployee(qtw.QDialog):
         cur_date_string = datetime.strftime(cur_date, "%Y-%m-%d")
         cur_date_string = cur_date_string
         # Get all logins from today
-        cursor.execute(f"SELECT id, time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id} AND time_in \
+        cursor.execute(f"SELECT id, time_in, time_out FROM {db_name}.labor WHERE employee_id = {emp_id} AND time_in \
             LIKE CONCAT({cur_date_string!r}, '%')")
         for login_id, time_in, time_out in cursor:
             logins.append([login_id, time_in, time_out])
@@ -920,7 +921,7 @@ class selectEmployee(qtw.QDialog):
             print(f"Running login for emp: {emp_id}")
         cur_date = datetime.now()
         timestampStr = cur_date.strftime("%Y-%m-%d %H:%M:%S")
-        cursor.execute(f"INSERT INTO dbs1709505.labor (time_in, employee_id) VALUES ({timestampStr!r}, {emp_id})")
+        cursor.execute(f"INSERT INTO {db_name}.labor (time_in, employee_id) VALUES ({timestampStr!r}, {emp_id})")
         db.commit()
         self.close()
         if debugging:
@@ -933,7 +934,7 @@ class selectEmployee(qtw.QDialog):
             print(f"Running logout on record: {login_record_id}")
         cur_date = datetime.now()
         timestampStr = cur_date.strftime("%Y-%m-%d %H:%M:%S")
-        cursor.execute(f"UPDATE dbs1709505.labor SET time_out = {timestampStr!r} WHERE id = {login_record_id}")
+        cursor.execute(f"UPDATE {db_name}.labor SET time_out = {timestampStr!r} WHERE id = {login_record_id}")
         db.commit()
         self.close()
         if debugging:
@@ -986,7 +987,7 @@ class manager(qtw.QDialog):
         # Is the session open
         if debugging:
             print("Checking for an open session...")
-        cursor.execute("SELECT * FROM dbs1709505.sessions WHERE id=(SELECT MAX(id) FROM dbs1709505.sessions)")
+        cursor.execute(f"SELECT * FROM {db_name}.sessions WHERE id=(SELECT MAX(id) FROM {db_name}.sessions)")
 
         self.close()
         self.window = enter_deposit(self.manager_id)
@@ -1028,7 +1029,7 @@ class manager(qtw.QDialog):
         if debugging:
             print("Beginning Day....")
             print("Checking for an open session...")
-        cursor.execute("SELECT * FROM dbs1709505.sessions WHERE id=(SELECT MAX(id) FROM dbs1709505.sessions)")
+        cursor.execute(f"SELECT * FROM {db_name}.sessions WHERE id=(SELECT MAX(id) FROM {db_name}.sessions)")
         for ses in cursor:
             if ses[2] is None:
                 # Open session already found. Abort and alert the user.
@@ -1044,10 +1045,10 @@ class manager(qtw.QDialog):
                     print("Opening a new session...")
                 cur_date = datetime.now()
                 open = cur_date.strftime("%Y-%m-%d %H:%M:%S")
-                cursor.execute(f"INSERT INTO dbs1709505.sessions (open_time) VALUES ({open!r})")
+                cursor.execute(f"INSERT INTO {db_name}.sessions (open_time) VALUES ({open!r})")
                 db.commit()
                 # Inform the user the session is now open
-                cursor.execute("SELECT * FROM dbs1709505.sessions WHERE id=(SELECT MAX(id) FROM dbs1709505.sessions)")
+                cursor.execute(f"SELECT * FROM {db_name}.sessions WHERE id=(SELECT MAX(id) FROM {db_name}.sessions)")
                 for sess in cursor:
                     if debugging:
                         print(f"Done. Session {sess[0]} is now open.")
@@ -1070,7 +1071,7 @@ class manager(qtw.QDialog):
         # Check for an open session
         if debugging:
             print("Checking for an open session to close.")
-        cursor.execute("SELECT * FROM dbs1709505.sessions WHERE id=(SELECT MAX(id) FROM dbs1709505.sessions)")
+        cursor.execute(f"SELECT * FROM {db_name}.sessions WHERE id=(SELECT MAX(id) FROM {db_name}.sessions)")
         for ses in cursor:
             if ses[2] is not None:
                 # Session is closed
@@ -1086,7 +1087,7 @@ class manager(qtw.QDialog):
                     print(f"Closing session {ses[0]}.")
                 cur_date = datetime.now()
                 close_time = cur_date.strftime("%Y-%m-%d %H:%M:%S")
-                cursor.execute(f"UPDATE dbs1709505.sessions SET close_time = {close_time!r} WHERE id = {ses[0]}")
+                cursor.execute(f"UPDATE {db_name}.sessions SET close_time = {close_time!r} WHERE id = {ses[0]}")
                 db.commit()
                 msg = qtw.QLabel(f"Session {ses[0]} closed.")
                 info_window.layout.addWidget(msg)
@@ -1116,7 +1117,7 @@ class employee_setup(qtw.QDialog):
         self.get_emp_info(0, 0)
 
     def new_emp(self):
-        cursor.execute(f"INSERT INTO dbs1709505.employee (first_name) VALUES ('New Employee')")
+        cursor.execute(f"INSERT INTO {db_name}.employee (first_name) VALUES ('New Employee')")
         db.commit()
         self.update_emp_list()
         self.get_emp_info(0, 0)
@@ -1127,7 +1128,7 @@ class employee_setup(qtw.QDialog):
         self.ui.tbl_employees.setRowCount(0)
 
         # Add current employees to the list widget
-        cursor.execute("SELECT id, first_name, last_name FROM dbs1709505.employee")
+        cursor.execute(f"SELECT id, first_name, last_name FROM {db_name}.employee")
         for name in cursor.fetchall():
             # Form the name
             names = ""
@@ -1155,7 +1156,7 @@ class employee_setup(qtw.QDialog):
         if debugging:
             print(f"Coordinates clicked: Row: {row} Column: {column}")
             print(f"Gathering info for employee id: {employee_id}")
-        cursor.execute(f"SELECT * FROM dbs1709505.employee WHERE id={employee_id}")
+        cursor.execute(f"SELECT * FROM {db_name}.employee WHERE id={employee_id}")
         for employee in cursor.fetchall():
             self.cur_emp = employee[0]
             self.ui.txt_fname.setText(employee[1])
@@ -1181,7 +1182,7 @@ class employee_setup(qtw.QDialog):
 
     @staticmethod
     def get_job_class_name(job_class_id):
-        sql_statement = "SELECT id, name FROM dbs1709505.job_class ORDER BY id ASC"
+        sql_statement = f"SELECT id, name FROM {db_name}.job_class ORDER BY id ASC"
         cursor.execute(sql_statement)
         job_classes = []
         for job_class in cursor:
@@ -1191,7 +1192,7 @@ class employee_setup(qtw.QDialog):
     @staticmethod
     def get_job_classes():
         job_classes = []
-        sql_statement = "SELECT name FROM dbs1709505.job_class ORDER BY id ASC"
+        sql_statement = f"SELECT name FROM {db_name}.job_class ORDER BY id ASC"
         cursor.execute(sql_statement)
         for job_class in cursor:
             job_classes.append(job_class[0])
@@ -1203,7 +1204,7 @@ class employee_setup(qtw.QDialog):
         is_salaried = 1 if self.ui.chk_salaried.isChecked() else 0
 
         # Build SQL statement
-        sql_statement = "UPDATE dbs1709505.employee SET first_name = %s, last_name = %s, display_name = %s, " \
+        sql_statement = f"UPDATE {db_name}.employee SET first_name = %s, last_name = %s, display_name = %s, " \
                         "passcode = %s, pay_rate = %s, ssn = %s, job_class_id = %s, active = %s, salaried = %s " \
                         "WHERE id = %s"
 
@@ -1321,7 +1322,7 @@ class enter_deposit(qtw.QDialog):
                 print("Making deposit...")
             cur_date = datetime.now()
             cur_date_string = datetime.strftime(cur_date, "%Y-%m-%d %H:%M:%S")
-            cursor.execute(f"INSERT INTO dbs1709505.deposits (date_time, employee_id, cash, checks) VALUES ("
+            cursor.execute(f"INSERT INTO {db_name}.deposits (date_time, employee_id, cash, checks) VALUES ("
                            f"{cur_date_string!r}, {self.emp_id}, {self.cash}, {self.checks})")
             db.commit()
             if debugging:
@@ -1395,7 +1396,7 @@ class vendors(qtw.QDialog):
                                                        "Contact", "Phone", "Products"])
 
         # Populate table
-        cursor.execute("SELECT * FROM dbs1709505.vendors")
+        cursor.execute(f"SELECT * FROM {db_name}.vendors")
         for idx, name, vendor_id, contact_name, phone, address, city, state, zipc, products in cursor:
             # Add a row
             self.ui.tableWidget.setRowCount(self.ui.tableWidget.rowCount() + 1)
@@ -1561,7 +1562,7 @@ class commission(qtw.QDialog):
         self.end_date_str = self.end_date_str + " 23:59:59"
 
         # Gather sales by employee during period
-        cursor.execute(f"SELECT id, sales_date, subtotal FROM dbs1709505.sales WHERE sales_date >= \
+        cursor.execute(f"SELECT id, sales_date, subtotal FROM {db_name}.sales WHERE sales_date >= \
             {self.start_date_str!r} AND sales_date <= {self.end_date_str!r} AND employee_id = {emp_id} \
             AND refunded = 0 AND voided = 0 AND subtotal > 0.0")
         total_sales = 0.0
@@ -1584,7 +1585,7 @@ class commission(qtw.QDialog):
         self.ui.lbl_total_commission.setText(f"Total Commission: {total_commish:.2f}")
 
         # Update name and date
-        cursor.execute(f"SELECT first_name from dbs1709505.employee WHERE id = {emp_id}")
+        cursor.execute(f"SELECT first_name from {db_name}.employee WHERE id = {emp_id}")
         for name in cursor:
             self.ui.lbl_salesperson.setText(f"Salesperson: {name[0]}")
 
@@ -1617,7 +1618,7 @@ class timecard(qtw.QDialog):
         if debugging:
             print(f"Gathering hours for timecard.\nInfo - Emp: {emp_id}\nStart Date: {self.start_date_str!r}\n"
                   f"End Date: {self.end_date_str!r}")
-        cursor.execute(f"SELECT time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id} AND time_in "
+        cursor.execute(f"SELECT time_in, time_out FROM {db_name}.labor WHERE employee_id = {emp_id} AND time_in "
                        f">= {self.start_date_str!r} and time_out <= {self.end_date_str!r}")
 
         # Setup the timecard table
@@ -1665,7 +1666,7 @@ class timecard(qtw.QDialog):
 
         # Set name and ID
         self.ui.lbl_id.setText(f"ID: {emp_id}")
-        cursor.execute(f"SELECT first_name FROM dbs1709505.employee WHERE id = {emp_id}")
+        cursor.execute(f"SELECT first_name FROM {db_name}.employee WHERE id = {emp_id}")
         for result in cursor:
             self.ui.lbl_name.setText(f"Name: {result[0]}")
 
@@ -1697,7 +1698,7 @@ class employee_check(qtw.QDialog):
         if debugging:
             print(f"Generating an employee check.\nInfo - Emp: {emp_id}\nStart Date: "
                   f"{self.start_date_str!r}\nEnd Date: {self.end_date_str!r}")
-        cursor.execute(f"SELECT time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id} AND time_in "
+        cursor.execute(f"SELECT time_in, time_out FROM {db_name}.labor WHERE employee_id = {emp_id} AND time_in "
                        f">= {self.start_date_str!r} and time_out <= {self.end_date_str!r}")
 
         # For each login, gather the hours worked
@@ -1716,7 +1717,7 @@ class employee_check(qtw.QDialog):
         # Build the entry for the payroll_history DB
 
         # Gross pay
-        cursor.execute(f"SELECT salaried, pay_rate, ssn, first_name FROM dbs1709505.employee WHERE id = {emp_id}")
+        cursor.execute(f"SELECT salaried, pay_rate, ssn, first_name FROM {db_name}.employee WHERE id = {emp_id}")
         if debugging:
             print(f"Calculating gross pay for emp: {emp_id}")
         for record in cursor:
@@ -1735,7 +1736,7 @@ class employee_check(qtw.QDialog):
                              - round(self.medicare_tax, 2) - round(self.state_tax, 2)
         else:
             # Salaried - pay_rate * number days worked
-            cursor.execute(f"SELECT time_in, time_out FROM dbs1709505.labor WHERE employee_id = {emp_id}\
+            cursor.execute(f"SELECT time_in, time_out FROM {db_name}.labor WHERE employee_id = {emp_id}\
                 AND time_in >= {self.start_date_str!r} AND time_out <= {self.end_date_str!r}")
             days_worked = 0
             paying_for_date = None
@@ -1774,7 +1775,7 @@ class employee_check(qtw.QDialog):
         # Insert the entry into payroll_history DB
         cur_date = datetime.now()
         cur_date_str = datetime.strftime(cur_date, "%Y-%m-%d %H:%M:%S")
-        cursor.execute(f"INSERT INTO dbs1709505.paycheck_history (employee_id, date_time, gross_pay, fica_tax, "
+        cursor.execute(f"INSERT INTO {db_name}.paycheck_history (employee_id, date_time, gross_pay, fica_tax, "
                        f"fita_tax, medicare_tax, state_tax) VALUES ({emp_id}, {cur_date_str!r}, {self.gross_pay}, "
                        f"{self.fica_tax}, {self.fita_tax}, {self.medicare_tax}, {self.state_tax})")
         db.commit()
@@ -1782,7 +1783,7 @@ class employee_check(qtw.QDialog):
             print("Paycheck added to paycheck_history.")
 
         # Use the record number for the check number
-        cursor.execute("SELECT MAX(id) FROM dbs1709505.paycheck_history")
+        cursor.execute(f"SELECT MAX(id) FROM {db_name}.paycheck_history")
         for rec in cursor:
             self.check_number = rec[0]
 
